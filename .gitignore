@@ -70,6 +70,18 @@ tests/auto/cmake/build
 examples/*/*[.]app
 examples/*/*[.]exe
 examples/*/*/*[.]exe
+examples/*/*/*[.]bat
 
 # Assimp
 AssimpLog.txt
+
+examples/**/debug/
+tests/**/debug/
+examples/**/release/
+tests/**/release/
+tests/**/*.bat
+src/quick3d/imports/*/*[.]bat
+src/doc/*[.]bat
+src/quick3d/imports/extras/defaults.qrc
+
+.gitignore

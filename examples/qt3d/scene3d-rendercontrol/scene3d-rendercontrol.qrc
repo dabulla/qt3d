@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/scene3d-rendercontrol">
+        <file>demo.qml</file>
+        <file>StereoCamera.qml</file>
+        <file>StereoFrameGraph.qml</file>
+    </qresource>
+</RCC>
