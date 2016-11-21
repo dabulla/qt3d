@@ -132,6 +132,7 @@ Scene3DRenderer::Scene3DRenderer(Scene3DItem *item, Qt3DCore::QAspectEngine *asp
     QObject::connect(m_item, &QQuickItem::windowChanged, this, &Scene3DRenderer::onWindowChangedQueued, Qt::QueuedConnection);
 
     Q_ASSERT(QOpenGLContext::currentContext());
+    //ContextSaver saver(item->window()->openglContext()); //TODO: Directly get glcontext from window/rendercontrol. Not needed?!
     ContextSaver saver;
     static_cast<QRenderAspectPrivate*>(QRenderAspectPrivate::get(m_renderAspect))->renderInitialize(saver.context());
     scheduleRootEntityChange();

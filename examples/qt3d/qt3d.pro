@@ -10,6 +10,8 @@ SUBDIRS += \
     wave \
     materials-cpp \
     scene3d \
+    scene3d-rendercontrol \
+    scene3d-vr \
     controls \
     anaglyph-rendering \
     planets-qml \
