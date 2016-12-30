@@ -3,6 +3,42 @@ This directory contains the Qt3D project for Qt5:
    * Qt3D C++ APIs
 
 
+Using VR Branch:
+
+the virtual-reality branches will be rebased from time to time.
+
+* clone the original qt from e.g. https://github.com/qt/qt5
+* create qtvars.cmd file and a link to open a qt-cmd-shell with the command "%SystemRoot%\system32\cmd.exe /E:ON /V:ON /k <path-to>\qtvars.cmd
+* qtvars.cmd contains:
+    REM Set up \Microsoft Visual Studio 2013, where <arch> is \c amd64, \c x86, etc.
+    CALL "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
+    SET _ROOT=C:\devel\qt5
+    SET PATH=%_ROOT%\qtbase\bin;%_ROOT%\gnuwin32\bin;%PATH%
+    REM Uncomment the below line when using a git checkout of the source repository
+    SET PATH=%_ROOT%\qtrepotools\bin;%PATH%
+    SET QMAKESPEC=win32-msvc2015
+    SET _ROOT=
+* change path in lines 2 and 3. Change architekture in line 2 and compiler win32-msvc2015 if needed.
+* use the newly created link to start a cmd shell. Do NOT use git-bash here.
+* execute:
+    configure -developer-build -opensource -confirm-license -nomake tests -nomake examples -opengl desktop -skip qtcanvas3d -skip qtwebengine -skip qtwebview -skip qtwebkit -skip qtwebchannel -skip qtpurchasing -skip qtenginio -skip qtdatavis3d -skip qtcharts -skip qtspeech -skip qtlocation -skip qtdeclarative -skip qtscript -skip qtwayland -skip qttranslations -skip qtserialbus -skip qtwebchannel -skip qtactiveqt -skip qtandroidextras -skip qtconnectivity
+* add virtual reality repositories for qt3d and qtbase:
+    cd qt3d
+	git remote add vr https://github.com/dabulla/qt3d-vr.git
+	git fetch vr
+	git checkout virtual-reality
+	cd ../qtbase
+	git remote add vr https://github.com/dabulla/qtbase-vr.git
+	git fetch vr
+	git checkout virtual-reality
+* build using jom from the qtvars-shell in the qt5 folder
+    jom
+* open qt3d/examples in creator and try the virtual-reality example
+* if anything goes wrong, "git clean" or "jom clean" may not be enough to reset the whole folder structure. Use
+	REM git submodule foreach --recursive "git clean -dfx"
+    REM (Removes files which have not been commited yet), then reconfigure!
+
+   
 Building Qt3D
 ==================
 

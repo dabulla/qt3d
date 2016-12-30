@@ -276,6 +276,7 @@ WindowMultiThreaded::WindowMultiThreaded()
       m_quickInitialized(false),
       m_psrRequested(false)
 {
+    QQmlEngine::addImportPath(".");
     setSurfaceType(QSurface::OpenGLSurface);
 
     QSurfaceFormat format;
