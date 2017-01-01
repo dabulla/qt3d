@@ -21,7 +21,10 @@ the virtual-reality branches will be rebased from time to time.
 * change path in lines 2 and 3. Change architekture in line 2 and compiler win32-msvc2015 if needed.
 * use the newly created link to start a cmd shell. Do NOT use git-bash here.
 * execute:
-    configure -developer-build -opensource -confirm-license -nomake tests -nomake examples -opengl desktop -skip qtcanvas3d -skip qtwebengine -skip qtwebview -skip qtwebkit -skip qtwebchannel -skip qtpurchasing -skip qtenginio -skip qtdatavis3d -skip qtcharts -skip qtspeech -skip qtlocation -skip qtdeclarative -skip qtscript -skip qtwayland -skip qttranslations -skip qtserialbus -skip qtwebchannel -skip qtactiveqt -skip qtandroidextras -skip qtconnectivity
+    configure -developer-build -opensource -confirm-license -nomake tests -nomake examples -opengl desktop -skip qtcanvas3d -skip qtwebengine -skip qtwebview -skip qtwebkit -skip qtwebchannel -skip qtpurchasing -skip qtenginio -skip qtdatavis3d -skip qtcharts -skip qtspeech -skip qtlocation -skip qtwayland -skip qttranslations -skip qtserialbus -skip qtwebchannel -skip qtactiveqt -skip qtandroidextras -skip qtconnectivity
+* if there is an error stating win32-msvc2015 is not valid during configure step, try the following in qtvars.cmd:
+    SET QMAKESPEC=win32-msvc
+    SET QMAKE_MSC_VER=14.0
 * add virtual reality repositories for qt3d and qtbase:
     cd qt3d
 	git remote add vr https://github.com/dabulla/qt3d-vr.git

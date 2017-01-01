@@ -23,10 +23,14 @@ HEADERS += window_multithreaded.h \
 
 RESOURCES += scene3d-vr.qrc
 
+#TODO: find_package(LibOVR)
 LIBS += -L"C:/develop/OculusSDK/LibOVR/Lib/Windows/x64/Release/VS2015" -lLibOVR
+LIBS += -L"E:/devel/OculusSDK/LibOVR/Lib/Windows/x64/Release/VS2015" -lLibOVR
 
 #if windows
 LIBS += -ldxgi
 #endif
 
+#TODO: find_package(LibOVR)
 INCLUDEPATH += "C:/develop/OculusSDK/LibOVR/Include"
+INCLUDEPATH += "E:/devel/OculusSDK/LibOVR/Include"

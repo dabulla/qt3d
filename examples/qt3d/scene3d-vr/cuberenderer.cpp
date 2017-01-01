@@ -62,14 +62,18 @@ CubeRenderer::~CubeRenderer()
 {
     // Use a temporary offscreen surface to do the cleanup.
     // There may not be a native window surface available anymore at this stage.
-    m_context->makeCurrent(m_offscreenSurface);
+    if(m_context && m_offscreenSurface)
+        m_context->makeCurrent(m_offscreenSurface);
 
     delete m_program;
     delete m_vbo;
     delete m_vao;
 
-    m_context->doneCurrent();
-    delete m_context;
+    if(m_context)
+    {
+        m_context->doneCurrent();
+        delete m_context;
+    }
 }
 
 void CubeRenderer::init(QWindow *w, QOpenGLContext *share)

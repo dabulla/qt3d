@@ -12,6 +12,8 @@ SUBDIRS += \
     scene3d \
     scene3d-rendercontrol \
     scene3d-vr \
+    vr-window \
+    #virtual-reality \
     controls \
     anaglyph-rendering \
     planets-qml \
@@ -35,3 +37,4 @@ qtHaveModule(widgets): SUBDIRS += basicshapes-cpp
 
 EXAMPLE_FILES += \
     exampleresources
+

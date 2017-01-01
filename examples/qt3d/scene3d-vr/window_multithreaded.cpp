@@ -211,28 +211,32 @@ void QuickRenderer::render(QMutexLocker *lock)
 {
     //TODO: Frame timing, is it 60Hz?. Try to get this done without window! QEventLoop? How is makeCurrent(whatsurface?) called?
     Q_ASSERT(QThread::currentThread() != m_window->thread());
+    if(!m_quit)
+    {
+        if (!m_context->makeCurrent(m_surface)) {
+            qWarning("Failed to make context current on render thread");
+            return;
+        }
 
-    if (!m_context->makeCurrent(m_surface)) {
-        qWarning("Failed to make context current on render thread");
-        return;
+        ensureFbo();
+        m_vrRenderer->sync();
+
+        // Synchronization and rendering happens here on the render thread.
+        m_renderControl->sync();
     }
-
-    ensureFbo();
-    m_vrRenderer->sync();
-
-    // Synchronization and rendering happens here on the render thread.
-    m_renderControl->sync();
-
     // The gui thread can now continue.
     m_cond.wakeOne();
     lock->unlock();
 
-    // Meanwhile on this thread continue with the actual rendering (into the FBO first).
-    m_vrRenderer->beforeRender();
-    //m_fbo->setTextureExternal(0, m_vrRenderer->getTexIdLeft());
-    m_renderControl->render();
-    m_vrRenderer->renderToHeadset();
-    m_context->functions()->glFlush();
+    if(!m_quit)
+    {
+        // Meanwhile on this thread continue with the actual rendering (into the FBO first).
+        m_vrRenderer->beforeRender();
+        //m_fbo->setTextureExternal(0, m_vrRenderer->getTexIdLeft());
+        m_renderControl->render();
+        m_vrRenderer->renderToHeadset();
+        m_context->functions()->glFlush();
+    }
 
     // The cube renderer uses its own context, no need to bother with the state here.
 
@@ -276,7 +280,7 @@ WindowMultiThreaded::WindowMultiThreaded()
       m_quickInitialized(false),
       m_psrRequested(false)
 {
-    QQmlEngine::addImportPath(".");
+    //QQmlEngine::addImportPath(".");
     setSurfaceType(QSurface::OpenGLSurface);
 
     QSurfaceFormat format;
