@@ -20,7 +20,8 @@ SOURCES += \
     backends/ovr/vrapiovr.cpp \
     qvirtualrealityapi.cpp \
     qheadmounteddisplay.cpp \
-    qvrhmdview.cpp
+    qvrhmdview.cpp \
+    qvrrendertarget.cpp
 
 HEADERS += \
     backends/ovr/vrapiovr.h \
@@ -29,7 +30,25 @@ HEADERS += \
     qvirtualrealityapibackend.h \
     qheadmounteddisplay.h \
     qvrhmdview.h \
-    qt3dvr_global.h
+    qt3dvr_global.h \
+    qvrrendertarget.h
 
 target.path = $$[QT_INSTALL_EXAMPLES]/qt3d/$$TARGET
 INSTALLS += target
+
+
+
+
+###### OVR ######
+
+#TODO: find_package(LibOVR)
+LIBS += -L"C:/develop/OculusSDK/LibOVR/Lib/Windows/x64/Release/VS2015" -lLibOVR
+LIBS += -L"E:/devel/OculusSDK/LibOVR/Lib/Windows/x64/Release/VS2015" -lLibOVR
+
+#if windows
+LIBS += -ldxgi
+#endif
+
+#TODO: find_package(LibOVR)
+INCLUDEPATH += "C:/develop/OculusSDK/LibOVR/Include"
+INCLUDEPATH += "E:/devel/OculusSDK/LibOVR/Include"
