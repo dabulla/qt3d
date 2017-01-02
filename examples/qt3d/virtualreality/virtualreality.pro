@@ -1,4 +1,4 @@
-TARGET   = Qt3DVirtualReality
+TARGET   = virtualreality
 
 TEMPLATE = lib
 
@@ -30,3 +30,6 @@ HEADERS += \
     qheadmounteddisplay.h \
     qvrhmdview.h \
     qt3dvr_global.h
+
+target.path = $$[QT_INSTALL_EXAMPLES]/qt3d/$$TARGET
+INSTALLS += target

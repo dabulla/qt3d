@@ -53,7 +53,9 @@
 #include <QGuiApplication>
 #include <QQmlEngine>
 #include <QQmlContext>
-#include "../qt3dvr/qvirtualrealityapi.h"
+#include <QQmlEngine>
+#include "qvirtualrealityapi.h"
+#include "qheadmounteddisplay.h"
 
 int main(int argc, char* argv[])
 {
@@ -68,7 +70,7 @@ int main(int argc, char* argv[])
     Qt3DVirtualReality::QHeadMountedDisplayFormat fmt;
     Qt3DVirtualReality::QHeadMountedDisplay *hmd(vrapi.getHmd(0, fmt));
     // Expose the head mounted display as a context property so we can set the aspect ratio
-    hmd->engine()->qmlEngine()->rootContext()->setContextProperty("_hmd", &hmd);
+    hmd->engine()->qmlEngine()->rootContext()->setContextProperty("_hmd", hmd);
     hmd->setSource(QUrl("qrc:/main.qml"));
 
     return app.exec();

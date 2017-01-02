@@ -13,7 +13,7 @@ SUBDIRS += \
     scene3d-rendercontrol \
     scene3d-vr \
     vr-window \
-    #virtual-reality \
+    virtualreality \
     controls \
     anaglyph-rendering \
     planets-qml \
@@ -38,3 +38,8 @@ qtHaveModule(widgets): SUBDIRS += basicshapes-cpp
 EXAMPLE_FILES += \
     exampleresources
 
+virtualreality.subdir = virtualreality
+vr-window.subdir  =  vr-window
+
+# what subproject depends on others
+vr-window.depends = virtualreality

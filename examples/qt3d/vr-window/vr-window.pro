@@ -4,8 +4,7 @@
 
 QT += 3dcore 3drender 3dinput 3dquick qml quick 3dquickextras
 
-LIBS += Qt3DVirtualReality
-#HEADERS += \
+HEADERS += \
 
 SOURCES += \
     main.cpp
@@ -22,3 +21,10 @@ RESOURCES += \
     ../exampleresources/metalbarrel.qrc \
     ../exampleresources/obj.qrc \
     ../exampleresources/textures.qrc
+
+DEPENDPATH += . ../virtualreality
+INCLUDEPATH += ../virtualreality
+
+win32:CONFIG (release, debug|release): LIBS += -L$$PWD/../virtualreality/release/ -lvirtualreality
+else:win32:CONFIG (debug, debug|release): LIBS += -L$$PWD/../virtualreality/debug/ -lvirtualreality
+else:unix: LIBS += -L$$PWD/virtualreality/ -lvirtualrealityTODO

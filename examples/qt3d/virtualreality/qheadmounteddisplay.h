@@ -36,7 +36,7 @@ namespace Qt3DVirtualReality {
 
 class QVirtualRealityApiBackend;
 
-class QHeadMountedDisplay : public QOffscreenSurface {
+class QT3DVR_EXPORT QHeadMountedDisplay : public QOffscreenSurface {
     Q_OBJECT
 
 public:
