@@ -7,6 +7,9 @@
 #include <QtCore/qpointer.h>
 #include <QScopedPointer>
 #include <QUrl>
+#include <QOpenGLFramebufferObject>
+
+#include <QQuickItem>
 
 QT_BEGIN_NAMESPACE
 
@@ -36,7 +39,7 @@ namespace Qt3DVirtualReality {
 
 class QVirtualRealityApiBackend;
 
-class QT3DVR_EXPORT QHeadMountedDisplay : public QOffscreenSurface {
+class QT3DVR_EXPORT QHeadMountedDisplay : public QObject /*: public QQuickItem*/ {
     Q_OBJECT
 
 public:
@@ -53,6 +56,11 @@ public:
     qreal refreshRate();
     qreal superSamplingFactor();
     QSize size();
+
+signals:
+    void requestRun();
+public slots:
+    void run();
 
 private:
     void onSceneCreated(QObject *rootObject);
@@ -72,6 +80,10 @@ private:
     QVirtualRealityApi *m_api;
     QVirtualRealityApiBackend *m_apibackend;
     int m_hmdId;
+    QOpenGLFramebufferObject *m_fbo;
+    QOpenGLContext *m_context;
+    QOffscreenSurface *m_surface;
+    QObject *m_rootItem;
 };
 
 } // Qt3DVirtualReality

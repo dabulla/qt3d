@@ -73,5 +73,6 @@ int main(int argc, char* argv[])
     hmd->engine()->qmlEngine()->rootContext()->setContextProperty("_hmd", hmd);
     hmd->setSource(QUrl("qrc:/main.qml"));
 
+    hmd->run();
     return app.exec();
 }

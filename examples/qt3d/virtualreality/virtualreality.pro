@@ -21,7 +21,8 @@ SOURCES += \
     qvirtualrealityapi.cpp \
     qheadmounteddisplay.cpp \
     qvrhmdview.cpp \
-    qvrrendertarget.cpp
+    qvrrendertarget.cpp \
+    qvrcamera.cpp
 
 HEADERS += \
     backends/ovr/vrapiovr.h \
@@ -31,7 +32,8 @@ HEADERS += \
     qheadmounteddisplay.h \
     qvrhmdview.h \
     qt3dvr_global.h \
-    qvrrendertarget.h
+    qvrrendertarget.h \
+    qvrcamera.h
 
 target.path = $$[QT_INSTALL_EXAMPLES]/qt3d/$$TARGET
 INSTALLS += target

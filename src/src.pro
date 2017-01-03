@@ -23,9 +23,9 @@ src_extras.subdir = $$PWD/extras
 src_extras.target = src_extras
 src_extras.depends = src_render src_input src_logic
 
-src_virtualreality.subdir = $$PWD/virtualreality
-src_virtualreality.target = virtualreality
-src_virtualreality.depends = src_render src_input src_logic
+#src_virtualreality.subdir = $$PWD/virtualreality
+#src_virtualreality.target = virtualreality
+#src_virtualreality.depends = src_render src_input src_logic
 
 # Quick3D libs
 src_quick3d_core.subdir = $$PWD/quick3d/quick3d
@@ -107,7 +107,7 @@ SUBDIRS += \
     src_input \
     src_animation \
     src_extras \
-    src_virtualreality \
+    #src_virtualreality \
     src_quick3d_core \
     src_quick3d_core_imports \
     src_quick3d_render \

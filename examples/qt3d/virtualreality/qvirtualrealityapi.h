@@ -45,7 +45,6 @@ public:
     /// \param type
     ///
     explicit QVirtualRealityApi(QVirtualRealityApi::Type type);
-    QVirtualRealityApi(const QVirtualRealityApi &other);
     ~QVirtualRealityApi();
 
     QVirtualRealityApi &operator=(const QVirtualRealityApi &other);
@@ -61,6 +60,7 @@ public:
     bool supportsSetSurface() const;
 
     QHeadMountedDisplay *getHmd(int hmdId, const QHeadMountedDisplayFormat &format);
+
 private:
     QVirtualRealityApi(QVirtualRealityApiPrivate &dd, QObject *parent = nullptr);
     Q_DECLARE_PRIVATE(QVirtualRealityApi)

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2014 Klaralvdalens Datakonsult AB (KDAB).
+** Copyright (C) 2015 Klaralvdalens Datakonsult AB (KDAB).
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the Qt3D module of the Qt Toolkit.
@@ -53,27 +53,64 @@ import Qt3D.Render 2.0
 
 Entity {
     id: root
+    property real convergence: 2000.0
+    property real eyeSeparation: 35.0
+    property real aspectRatio: _window.width / _window.height
+    property real fieldOfView: 60.0
+    property real nearPlane: 10.0
+    property real farPlane: 10000.0
 
-    property real x: 0.0
-    property real y: 0.0
-    property real z: 0.0
-    property real scale: 1.0
-    property real theta: 0.0
-    property real phi: 0.0
-    property Material material
+    property vector3d viewCenter: Qt.vector3d(0.0, 0.0, 0.0)
+    property vector3d position: Qt.vector3d(0.0, 0.0, 1.0)
 
-    components: [ transform, mesh, root.material ]
+    readonly property real _fov2: Math.tan(fieldOfView * Math.PI / 180 * 0.5)
+    readonly property real top: nearPlane * _fov2
+    readonly property real a: aspectRatio * _fov2 * convergence
 
-    Transform {
-        id: transform
-        translation: Qt.vector3d(root.x, root.y, root.z)
-        rotationX: theta
-        rotationY: phi
-        scale: root.scale
+    CameraLens {
+        id: leftEyeLens
+        projectionType: CameraLens.FrustumProjection
+        nearPlane : root.nearPlane
+        farPlane : root.farPlane
+        left: -(a - eyeSeparation * 0.5) * nearPlane / convergence
+        right: (a + eyeSeparation * 0.5) * nearPlane / convergence
+        top: root.top
+        bottom: -root.top
     }
 
-    Mesh {
-        id: mesh
-        source: "assets/obj/trefoil.obj"
+    CameraLens {
+        id: rightEyeLens
+        projectionType: CameraLens.FrustumProjection
+        nearPlane : root.nearPlane
+        farPlane : root.farPlane
+        left: -(a + eyeSeparation * 0.5) * nearPlane / convergence
+        right: (a - eyeSeparation * 0.5) * nearPlane / convergence
+        top: root.top
+        bottom: -root.top
+    }
+
+    Transform {
+        id: eyeTransform
+
+        matrix: {
+            var m = Qt.matrix4x4();
+            m.lookAt(root.position, root.viewCenter, Qt.vector3d(0.0, 1.0, 0.0));
+            return m;
+        }
+    }
+
+    property Entity leftCamera: Entity {
+        components: [
+            leftEyeLens,
+            eyeTransform
+        ]
+    }
+
+    property Entity rightCamera: Entity {
+        id: rightCameraEntity
+        components: [
+            rightEyeLens,
+            eyeTransform
+        ]
     }
 }

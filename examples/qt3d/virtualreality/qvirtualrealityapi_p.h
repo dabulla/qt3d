@@ -23,6 +23,10 @@
 
 QT_BEGIN_NAMESPACE
 
+#if(QT3DVR_COMPILE_WITH_OVR)
+#  include "backends/ovr/vrapiovr.h"
+#endif
+
 namespace Qt3DVirtualReality {
 
 class QVirtualRealityApiPrivate : public QObjectPrivate
@@ -37,9 +41,19 @@ public:
     void setType(QVirtualRealityApi::Type vendor) {
 #if(QT3DVR_COMPILE_WITH_OVR)
         if(QVirtualRealityApi::Ovr == vendor) {
-
+            m_apibackend = new VirtualRealityApiOvr();
         }
 #endif
+    }
+    QVirtualRealityApiPrivate()
+      : m_apibackend(nullptr)
+    {
+
+    }
+
+    ~QVirtualRealityApiPrivate() {
+        if(m_apibackend)
+            delete m_apibackend;
     }
 };
 

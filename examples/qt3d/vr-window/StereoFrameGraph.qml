@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2014 Klaralvdalens Datakonsult AB (KDAB).
+** Copyright (C) 2015 Klaralvdalens Datakonsult AB (KDAB).
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the Qt3D module of the Qt Toolkit.
@@ -50,25 +50,47 @@
 
 import Qt3D.Core 2.0
 import Qt3D.Render 2.0
-import Qt3D.Extras 2.0
 
-Entity {
-    id: root
-    property alias position: transform.translation
-    property alias scale: transform.scale
-    property alias width: mesh.width
-    property alias height: mesh.height
-    property alias resolution: mesh.meshResolution
-    property Material material
+Viewport {
 
-    components: [ transform, mesh, root.material ]
+    property alias leftCamera: leftCameraSelector.camera
+    property alias rightCamera: rightCameraSelector.camera
+    property alias window: surfaceSelector.surface
 
-    Transform { id: transform }
+    RenderSurfaceSelector {
+        id: surfaceSelector
 
-    PlaneMesh {
-        id: mesh
-        width: 1.0
-        height: 1.0
-        meshResolution: Qt.size(2, 2)
+        // ColorMask is reset by default
+        // By default reset to the default if not specified
+        ClearBuffers {
+            buffers: ClearBuffers.ColorDepthBuffer
+            NoDraw {} // We just want to clear the buffers
+        }
+
+        // Draw with left eye
+        CameraSelector {
+            id: leftCameraSelector
+            Viewport {
+                RenderStateSet {
+                    renderStates: [
+                        DepthTest { depthFunction: DepthTest.Less }
+                    ]
+                }
+                normalizedRect: Qt.rect(0,0,0.5,1)
+            }
+        }
+
+        // Draw with right eye
+        CameraSelector {
+            id: rightCameraSelector
+            Viewport {
+                RenderStateSet {
+                    renderStates: [
+                        DepthTest { depthFunction: DepthTest.Less }
+                    ]
+                }
+                normalizedRect: Qt.rect(0.5,0,0.5,1)
+            }
+        }
     }
 }

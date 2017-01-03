@@ -15,12 +15,7 @@ OTHER_FILES += \
     HousePlant.qml
 
 RESOURCES += \
-    materials.qrc \
-    ../exampleresources/chest.qrc \
-    ../exampleresources/houseplants.qrc \
-    ../exampleresources/metalbarrel.qrc \
-    ../exampleresources/obj.qrc \
-    ../exampleresources/textures.qrc
+    vr.qrc
 
 DEPENDPATH += . ../virtualreality
 INCLUDEPATH += ../virtualreality

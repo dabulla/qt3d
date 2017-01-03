@@ -15,14 +15,20 @@ public:
 
     GLuint createSurface(int hmdId, const QSize &size, const QSurfaceFormat &format);
     GLuint setSurface(int hmdId, GLuint textureId);
-
-    void swapToHeadset();
+    void destroySurface(int hmdId, GLuint textureId);
 
     qreal refreshRate(int hmdId) const;
     QMatrix4x4 headPose(int hmdId);
+    QSize getRenderSurfaceSize();
+
+    void swapToHeadset();
+
+    void getEyeMatrices(QMatrix4x4 &leftEye, QMatrix4x4 &rightEye);
+
 private:
     ovrSession m_session;
     ovrGraphicsLuid m_luid;
+    //TO DO: decouple using hmdId
     ovrHmdDesc m_hmdDesc;
     ovrPosef   m_eyeRenderPose[2];
     QVrRendertarget *m_bothEyesTemp;

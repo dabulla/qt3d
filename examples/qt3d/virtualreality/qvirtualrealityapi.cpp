@@ -9,13 +9,10 @@ Qt3DVirtualReality::QVirtualRealityApi::QVirtualRealityApi()
 }
 
 Qt3DVirtualReality::QVirtualRealityApi::QVirtualRealityApi(Qt3DVirtualReality::QVirtualRealityApi::Type type)
+    : QVirtualRealityApi()
 {
-
-}
-
-Qt3DVirtualReality::QVirtualRealityApi::QVirtualRealityApi(const Qt3DVirtualReality::QVirtualRealityApi &other)
-{
-
+    Q_D(QVirtualRealityApi);
+    d->setType(type);
 }
 
 Qt3DVirtualReality::QVirtualRealityApi::~QVirtualRealityApi()
