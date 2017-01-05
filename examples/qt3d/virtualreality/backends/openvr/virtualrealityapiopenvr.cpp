@@ -162,11 +162,6 @@ bool VirtualRealityApiOpenVR::isHmdPresent() const
     return true; //TODO
 }
 
-bool VirtualRealityApiOpenVR::supportsSetSurface() const
-{
-    return false; // TODO, this is actually true for OpenVR
-}
-
 void VirtualRealityApiOpenVR::initialize()
 {
     vr::EVRInitError error = vr::VRInitError_None;
@@ -190,6 +185,9 @@ void VirtualRealityApiOpenVR::initialize()
         return;
     }
     setupCameras();
+
+    m_fbo = new QOpenGLFramebufferObject(getRenderTargetSize(), QOpenGLFramebufferObject::Depth);
+    m_fbo->addColorAttachment(m_fbo->size(), GL_RGBA8);
 }
 
 void VirtualRealityApiOpenVR::shutdown()
@@ -228,32 +226,9 @@ void VirtualRealityApiOpenVR::processVrEvent( const vr::VREvent_t & event )
     }
 }
 
-
-void VirtualRealityApiOpenVR::createSurface(int hmdId, const QSize &size, const QSurfaceFormat &format)
+bool VirtualRealityApiOpenVR::bindFrambufferObject()
 {
-    if ( !m_hmd )
-        return;
-
-    m_fbo = new QOpenGLFramebufferObject(getRenderSurfaceSize());
-    m_fbo->addColorAttachment(m_fbo->size(), GL_RGBA8);
-}
-
-GLuint VirtualRealityApiOpenVR::currentTextureId()
-{
-    return m_fbo->texture();
-}
-
-GLuint VirtualRealityApiOpenVR::setSurface(int hmdId, GLuint textureId)
-{
-    return 0;
-}
-
-void VirtualRealityApiOpenVR::destroySurface(int hmdId, GLuint textureId)
-{
-    if(m_fbo) {
-        delete m_fbo;
-        m_fbo = nullptr;
-    }
+    return m_fbo->bind();
 }
 
 qreal VirtualRealityApiOpenVR::refreshRate(int hmdId) const
@@ -267,7 +242,7 @@ QMatrix4x4 VirtualRealityApiOpenVR::headPose(int hmdId)
     return m_hmdPose;
 }
 
-QSize VirtualRealityApiOpenVR::getRenderSurfaceSize()
+QSize VirtualRealityApiOpenVR::getRenderTargetSize()
 {
     uint32_t width, height;
     m_hmd->GetRecommendedRenderTargetSize( &width, &height );

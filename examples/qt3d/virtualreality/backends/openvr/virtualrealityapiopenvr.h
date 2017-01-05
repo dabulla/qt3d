@@ -11,18 +11,14 @@ class VirtualRealityApiOpenVR : public Qt3DVirtualReality::QVirtualRealityApiBac
 public:
     VirtualRealityApiOpenVR();
     bool isHmdPresent() const;
-    bool supportsSetSurface() const;
 
     void initialize();
     void shutdown();
-    void createSurface(int hmdId, const QSize &size, const QSurfaceFormat &format);
-    GLuint currentTextureId();
-    GLuint setSurface(int hmdId, GLuint textureId);
-    void destroySurface(int hmdId, GLuint textureId);
+    bool bindFrambufferObject();
 
     qreal refreshRate(int hmdId) const;
     QMatrix4x4 headPose(int hmdId);
-    QSize getRenderSurfaceSize();
+    QSize getRenderTargetSize();
 
     void swapToHeadset();
 

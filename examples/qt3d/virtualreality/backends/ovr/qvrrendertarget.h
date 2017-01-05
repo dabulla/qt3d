@@ -3,7 +3,7 @@
 
 #include <QOpenGLFunctions_3_2_Core>
 #include <QOpenGLFramebufferObject>
-
+#include <QVector>
 #include <iostream>
 
 //#include "GL/CAPI_GLE.h"
@@ -18,27 +18,26 @@
 
 using namespace OVR;
 
-class QVrRendertarget
-{
+class OvrFramebuffer;
 
-    //GLuint              m_texId;
-    //GLuint              m_fboId;
-    Sizei               m_texSize;
+class OvrSwapChain
+{
+    QSize               m_texSize;
     ovrSession          m_session;
     //GLuint              m_texIdDepthBuffer;
     QOpenGLFunctions_3_2_Core *m_funcs;
+    QVector<OvrFramebuffer *> m_framebuffers;
+    ovrTextureSwapChain m_textureChain;
 public:
-    QVrRendertarget(ovrSession session, ovrSizei size);
-    ~QVrRendertarget();
+    OvrSwapChain(ovrSession session, QSize size);
+    ~OvrSwapChain();
 
-    ovrTextureSwapChain m_oVrTextureChain;
-
-    Sizei size() const;
-    //GLuint fboId();
-    GLuint texId();
-//    void SetAndClearRenderSurface();
-//    void UnsetRenderSurface();
-    void Commit();
+    QSize size() const;
+    void   bindCurrentChainIndexFramebuffer();
+    void   bindFramebuffer(int index);
+    int    chainLength() const;
+    void   commit();
+    const ovrTextureSwapChain &ovrTextureChain() const;
 };
 
 #endif

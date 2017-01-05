@@ -5,23 +5,26 @@
 #include "OVR_CAPI_GL.h"
 class QSurfaceFormat;
 class QVrRendertarget;
+class OvrSwapChain;
 
 class VirtualRealityApiOvr : public Qt3DVirtualReality::QVirtualRealityApiBackend
 {
 public:
     VirtualRealityApiOvr();
+    ~VirtualRealityApiOvr();
     bool isHmdPresent() const;
     bool supportsSetSurface() const;
 
     void initialize();
-    void createSurface(int hmdId, const QSize &size, const QSurfaceFormat &format);
-    GLuint currentTextureId();
-    GLuint setSurface(int hmdId, GLuint textureId);
-    void destroySurface(int hmdId, GLuint textureId);
+    bool bindFrambufferObject();
+    //void createSurface(int hmdId, const QSize &size, const QSurfaceFormat &format);
+    //GLuint currentTextureId();
+    //GLuint setSurface(int hmdId, GLuint textureId);
+    //void destroySurface(int hmdId, GLuint textureId);
 
     qreal refreshRate(int hmdId) const;
     QMatrix4x4 headPose(int hmdId);
-    QSize getRenderSurfaceSize();
+    QSize getRenderTargetSize();
 
     void swapToHeadset();
 
@@ -37,6 +40,7 @@ private:
     QVrRendertarget *m_bothEyesTemp;
     double m_sensorSampleTime;
     long long m_frameIndex;
+    OvrSwapChain *m_swapChain;
 };
 
 #endif

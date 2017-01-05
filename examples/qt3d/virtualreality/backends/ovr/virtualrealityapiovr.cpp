@@ -35,10 +35,17 @@ static ovrGraphicsLuid GetDefaultAdapterLuid()
 }
 
 VirtualRealityApiOvr::VirtualRealityApiOvr()
-    :m_bothEyesTemp(nullptr),
-     m_sensorSampleTime(0.0),
-     m_frameIndex(0)
+    : m_bothEyesTemp(nullptr)
+    , m_sensorSampleTime(0.0)
+    , m_frameIndex(0)
+    , m_swapChain(nullptr)
 {
+}
+
+VirtualRealityApiOvr::~VirtualRealityApiOvr()
+{
+    if(m_swapChain != nullptr)
+        delete m_swapChain;
 }
 
 bool VirtualRealityApiOvr::isHmdPresent() const
@@ -74,64 +81,34 @@ void VirtualRealityApiOvr::initialize()
     }
 
     m_hmdDesc = ovr_GetHmdDesc(m_session);
-}
-
-void VirtualRealityApiOvr::createSurface(int hmdId, const QSize &size, const QSurfaceFormat &format)
-{
-    ovrSizei rtSize;
-    if(size.width() == 0 || size.height() == 0) {
-        ovrSizei idealTextureSizeLeft = ovr_GetFovTextureSize(m_session, ovrEye_Left, m_hmdDesc.DefaultEyeFov[ovrEye_Left], 1.0f);
-        ovrSizei idealTextureSizeRight = ovr_GetFovTextureSize(m_session, ovrEye_Right, m_hmdDesc.DefaultEyeFov[ovrEye_Right], 1.0f);
-        if(idealTextureSizeLeft.h != idealTextureSizeRight.h)
-        {
-            qDebug() << "WARN: Right and left eye differ in height";
-        }
-        else
-        {
-            qDebug() << "ideal Texture Size: " << idealTextureSizeLeft.w << " x " << idealTextureSizeLeft.h;
-        }
-        rtSize.w = idealTextureSizeLeft.w+idealTextureSizeRight.w;
-        rtSize.h = idealTextureSizeLeft.h;
-    } else {
-        rtSize.w = size.width();
-        rtSize.h = size.height();
-    }
-
-    m_bothEyesTemp = new QVrRendertarget(m_session, rtSize);
     ovr_SetTrackingOriginType(m_session, ovrTrackingOrigin_FloorLevel);
+    m_swapChain = new OvrSwapChain(m_session, getRenderTargetSize());
 }
 
-GLuint VirtualRealityApiOvr::currentTextureId()
+bool VirtualRealityApiOvr::bindFrambufferObject()
 {
-    return m_bothEyesTemp->texId();
-}
-
-GLuint VirtualRealityApiOvr::setSurface(int hmdId, GLuint textureId)
-{
-    return 0;
-}
-
-void VirtualRealityApiOvr::destroySurface(int hmdId, GLuint textureId)
-{
-    // TO DO
+    m_swapChain->bindCurrentChainIndexFramebuffer();
+    return true;
 }
 
 void VirtualRealityApiOvr::swapToHeadset()
 {
     qDebug() << "Render to Headset:" << m_frameIndex;
-    m_bothEyesTemp->Commit();
+    m_swapChain->commit();
 
     ovrLayerEyeFov ld;
     ld.Header.Type  = ovrLayerType_EyeFov;
     ld.Header.Flags = ovrLayerFlag_TextureOriginAtBottomLeft;   // Because OpenGL.
 
-    ld.ColorTexture[ovrEye_Left] = m_bothEyesTemp->m_oVrTextureChain;
-    ld.Viewport[ovrEye_Left]     = Recti(0, 0, m_bothEyesTemp->size().w/2, m_bothEyesTemp->size().h);
+    ld.ColorTexture[ovrEye_Left] = m_swapChain->ovrTextureChain();
+    int halfWidth = m_swapChain->size().width()/2;
+    int height = m_swapChain->size().height();
+    ld.Viewport[ovrEye_Left]     = Recti(0, 0, halfWidth, height);
     ld.Fov[ovrEye_Left]          = m_hmdDesc.DefaultEyeFov[ovrEye_Left];
     ld.RenderPose[ovrEye_Left]   = m_eyeRenderPose[ovrEye_Left];
 
-    ld.ColorTexture[ovrEye_Right] = m_bothEyesTemp->m_oVrTextureChain;
-    ld.Viewport[ovrEye_Right]     = Recti(m_bothEyesTemp->size().w/2, 0, m_bothEyesTemp->size().w/2, m_bothEyesTemp->size().h);
+    ld.ColorTexture[ovrEye_Right] = m_swapChain->ovrTextureChain();
+    ld.Viewport[ovrEye_Right]     = Recti(halfWidth, 0, halfWidth, height);
     ld.Fov[ovrEye_Right]          = m_hmdDesc.DefaultEyeFov[ovrEye_Right];
     ld.RenderPose[ovrEye_Right]   = m_eyeRenderPose[ovrEye_Right];
 
@@ -158,13 +135,13 @@ void VirtualRealityApiOvr::getEyeMatrices(QMatrix4x4 &leftEye, QMatrix4x4 &right
     // Get eye poses, feeding in correct IPD offset
     ovrVector3f               HmdToEyeOffset[2] = { eyeRenderDesc[0].HmdToEyeOffset,
                                                  eyeRenderDesc[1].HmdToEyeOffset };
-    ovrPosef eyePoses[2];
-    ovr_GetEyePoses(m_session, m_frameIndex, ovrTrue, HmdToEyeOffset, eyePoses, &m_sensorSampleTime);
 
-    ovrVector3f &posLeft = eyePoses[ovrEye_Left].Position;
-    ovrVector3f &posRight = eyePoses[ovrEye_Right].Position;
-    ovrQuatf orientLeft = eyePoses[ovrEye_Left].Orientation;
-    ovrQuatf orientRight = eyePoses[ovrEye_Right].Orientation;
+    ovr_GetEyePoses(m_session, m_frameIndex, ovrTrue, HmdToEyeOffset, m_eyeRenderPose, &m_sensorSampleTime);
+
+    ovrVector3f &posLeft = m_eyeRenderPose[ovrEye_Left].Position;
+    ovrVector3f &posRight = m_eyeRenderPose[ovrEye_Right].Position;
+    ovrQuatf orientLeft = m_eyeRenderPose[ovrEye_Left].Orientation;
+    ovrQuatf orientRight = m_eyeRenderPose[ovrEye_Right].Orientation;
     //orientLeft.y *= -1.0f;
     //orientRight.y *= -1.0f;
 
@@ -188,7 +165,6 @@ void VirtualRealityApiOvr::getEyeMatrices(QMatrix4x4 &leftEye, QMatrix4x4 &right
                   m.M[1][0], m.M[1][1], m.M[1][2], m.M[1][3],
                   m.M[2][0], m.M[2][1], m.M[2][2], m.M[2][3],
             m.M[3][0], m.M[3][1], m.M[3][2], m.M[3][3]);
-    qDebug() << leftEye << m_sensorSampleTime << "sampled";
 }
 
 void VirtualRealityApiOvr::getProjectionMatrices(QMatrix4x4 &leftProjection, QMatrix4x4 &rightProjection)
@@ -218,13 +194,13 @@ QMatrix4x4 VirtualRealityApiOvr::headPose(int hmdId)
     return QMatrix4x4();
 }
 
-QSize VirtualRealityApiOvr::getRenderSurfaceSize()
+QSize VirtualRealityApiOvr::getRenderTargetSize()
 {
-    if(m_bothEyesTemp == nullptr)
+    if(m_swapChain == nullptr)
     {
         ovrSizei idealTextureSizeLeft = ovr_GetFovTextureSize(m_session, ovrEye_Left, m_hmdDesc.DefaultEyeFov[ovrEye_Left], 1.0f);
         ovrSizei idealTextureSizeRight = ovr_GetFovTextureSize(m_session, ovrEye_Right, m_hmdDesc.DefaultEyeFov[ovrEye_Right], 1.0f);
         return QSize(idealTextureSizeLeft.w+idealTextureSizeRight.w, idealTextureSizeLeft.h);
     }
-    return QSize(m_bothEyesTemp->size().w, m_bothEyesTemp->size().h);
+    return m_swapChain->size();
 }

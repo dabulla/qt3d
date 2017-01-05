@@ -176,7 +176,7 @@ QObject *QHeadMountedDisplay::surface() const
 
 QSize QHeadMountedDisplay::renderTargetSize() const
 {
-    return m_apibackend->getRenderSurfaceSize();
+    return m_apibackend->getRenderTargetSize();
 }
 
 QOpenGLContext *QHeadMountedDisplay::context()
@@ -204,7 +204,6 @@ void QHeadMountedDisplay::onSceneCreated(QObject *rootObject)
 //    }
 
     if(m_rootItem) {
-
         QVRCamera *vrCamera = m_rootItem->findChild<QVRCamera *>();
         if(vrCamera) {
             QMatrix4x4 projL;
@@ -234,17 +233,17 @@ void QHeadMountedDisplay::run() {
     m_context->makeCurrent(m_surface);
 
 
-    QOpenGLFramebufferObjectFormat format;
-    format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
-    format.setTextureTarget(GL_TEXTURE_2D);
-    format.setSamples(0);
-    format.setMipmap(false);
+//    QOpenGLFramebufferObjectFormat format;
+//    format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
+//    format.setTextureTarget(GL_TEXTURE_2D);
+//    format.setSamples(0);
+//    format.setMipmap(false);
 
-    QSize renderTargetSize = m_apibackend->getRenderSurfaceSize();
-    if(m_fbo)
-        delete m_fbo;
-    m_fbo = new QOpenGLFramebufferObject(renderTargetSize, format, m_apibackend->currentTextureId() );
-    m_fbo->bind();
+//    QSize renderTargetSize = m_apibackend->getRenderSurfaceSize();
+//    if(m_fbo)
+//        delete m_fbo;
+//    m_fbo = new QOpenGLFramebufferObject(renderTargetSize, format, m_apibackend->currentTextureId() );
+//    m_fbo->bind();
 
     //glViewport(0, 0, renderTargetSize.width(), renderTargetSize.height());
 
@@ -255,9 +254,9 @@ void QHeadMountedDisplay::run() {
     QVRCamera *vrCamera(nullptr);
     if(m_rootItem)
         vrCamera = m_rootItem->findChild<QVRCamera *>();
+    m_apibackend->bindFrambufferObject();
     QMatrix4x4 leftEye;
     QMatrix4x4 rightEye;
-    QMatrix4x4 tmp;
     m_apibackend->getEyeMatrices(leftEye, rightEye);
     if(vrCamera != nullptr)
         vrCamera->update(leftEye, rightEye);
@@ -286,7 +285,7 @@ void QHeadMountedDisplay::setWindowSurface(QObject *rootObject)
         delete m_fbo;
         m_fbo = nullptr;
     }
-    const QSize texSize(m_apibackend->getRenderSurfaceSize());
+    const QSize texSize(m_apibackend->getRenderTargetSize());
 
     //TODO: At the moment FBO is recreated each frame
     //if (!m_fbo) {
@@ -296,8 +295,8 @@ void QHeadMountedDisplay::setWindowSurface(QObject *rootObject)
         format.setSamples(0);
         format.setMipmap(false);
 
-        QSurfaceFormat notUsedTodo;
-        m_apibackend->createSurface(m_hmdId, texSize, notUsedTodo);
+//        QSurfaceFormat notUsedTodo;
+//        m_apibackend->createSurface(m_hmdId, texSize, notUsedTodo);
         emit renderTargetSizeChanged(texSize);
         //m_fbo = new QOpenGLFramebufferObject(texSize, format, texId );
         //m_quickWindow->setRenderTarget(m_fbo);

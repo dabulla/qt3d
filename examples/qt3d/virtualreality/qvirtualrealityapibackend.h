@@ -16,20 +16,15 @@ class QVirtualRealityApiBackend
 {
 public:
     virtual bool isHmdPresent() const = 0;
-    virtual bool supportsSetSurface() const = 0;
 
     virtual void initialize() = 0;
-    // TO DO: Rename, so this does not confuse with QSurface
-    virtual void createSurface(int hmdId, const QSize &size, const QSurfaceFormat &format) = 0;
-    virtual GLuint setSurface(int hmdId, GLuint textureId) = 0;
-    virtual void destroySurface(int hmdId, GLuint textureId) = 0;
+    virtual bool bindFrambufferObject() = 0;
 
-    virtual GLuint currentTextureId() = 0;
     virtual qreal refreshRate(int hmdId) const = 0;
     virtual QMatrix4x4 headPose(int hmdId) = 0;
 
     //TO DO: introduce getRecomendedSize()
-    virtual QSize getRenderSurfaceSize() = 0;
+    virtual QSize getRenderTargetSize() = 0;
 
     virtual void swapToHeadset() = 0;
 

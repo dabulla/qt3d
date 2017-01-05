@@ -18,15 +18,16 @@ CONFIG += c++11
 
 SOURCES += \
     backends/ovr/virtualrealityapiovr.cpp \
+    backends/ovr/qvrrendertarget.cpp \
     backends/openvr/virtualrealityapiopenvr.cpp \
     qvirtualrealityapi.cpp \
     qheadmounteddisplay.cpp \
     qvrhmdview.cpp \
-    qvrrendertarget.cpp \
     qvrcamera.cpp
 
 HEADERS += \
     backends/ovr/virtualrealityapiovr.h \
+    backends/ovr/qvrrendertarget.h \
     backends/openvr/virtualrealityapiopenvr.h \
     qvirtualrealityapi.h \
     qvirtualrealityapi_p.h \
@@ -34,7 +35,6 @@ HEADERS += \
     qheadmounteddisplay.h \
     qvrhmdview.h \
     qt3dvr_global.h \
-    qvrrendertarget.h \
     qvrcamera.h
 
 target.path = $$[QT_INSTALL_EXAMPLES]/qt3d/$$TARGET
