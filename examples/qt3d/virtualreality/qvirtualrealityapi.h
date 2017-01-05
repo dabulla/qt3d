@@ -55,7 +55,7 @@ public:
     ///
     QVirtualRealityApi::Type type() const;
 
-    bool isHmdPresent() const;
+    bool isHmdPresent();
     static bool isRuntimeInstalled(QVirtualRealityApi::Type type);
     bool supportsSetSurface() const;
 

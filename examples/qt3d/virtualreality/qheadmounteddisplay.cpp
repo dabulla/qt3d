@@ -18,6 +18,7 @@
 #include "qvirtualrealityapibackend.h"
 #include <Qt3DRender/QRenderAspect>
 #include <Qt3DRender/private/qrenderaspect_p.h>
+#include <Qt3DCore/private/qabstractaspectjobmanager_p.h>
 #include "qvrcamera.h"
 
 #include <QOpenGLDebugLogger>
@@ -260,9 +261,9 @@ void QHeadMountedDisplay::run() {
     m_apibackend->getEyeMatrices(leftEye, rightEye);
     if(vrCamera != nullptr)
         vrCamera->update(leftEye, rightEye);
+    static_cast<Qt3DRender::QRenderAspectPrivate*>(Qt3DRender::QRenderAspectPrivate::get(m_renderAspect))->jobManager()->waitForAllJobs();
     static_cast<Qt3DRender::QRenderAspectPrivate*>(Qt3DRender::QRenderAspectPrivate::get(m_renderAspect))->renderSynchronous();
-    //m_fbo->bindDefault();
-
+    m_fbo->bindDefault();
     m_apibackend->swapToHeadset();
     emit requestRun();
 }

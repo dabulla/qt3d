@@ -60,13 +60,13 @@
 int main(int argc, char* argv[])
 {
     QGuiApplication app(argc, argv);
-    bool ovrAvialable = Qt3DVirtualReality::QVirtualRealityApi::isRuntimeInstalled(Qt3DVirtualReality::QVirtualRealityApi::OpenVR);
+    bool ovrAvialable = Qt3DVirtualReality::QVirtualRealityApi::isRuntimeInstalled(Qt3DVirtualReality::QVirtualRealityApi::Ovr);
     if(!ovrAvialable)
     {
         qDebug() << "Implement Vive support.";
         return 1;
     }
-    Qt3DVirtualReality::QVirtualRealityApi vrapi(Qt3DVirtualReality::QVirtualRealityApi::OpenVR);
+    Qt3DVirtualReality::QVirtualRealityApi vrapi(Qt3DVirtualReality::QVirtualRealityApi::Ovr);
     Qt3DVirtualReality::QHeadMountedDisplayFormat fmt;
     Qt3DVirtualReality::QHeadMountedDisplay *hmd(vrapi.getHmd(0, fmt));
     // Expose the head mounted display as a context property so we can set the aspect ratio

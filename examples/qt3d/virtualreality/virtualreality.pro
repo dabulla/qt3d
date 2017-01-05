@@ -22,7 +22,6 @@ SOURCES += \
     backends/openvr/virtualrealityapiopenvr.cpp \
     qvirtualrealityapi.cpp \
     qheadmounteddisplay.cpp \
-    qvrhmdview.cpp \
     qvrcamera.cpp
 
 HEADERS += \
@@ -33,7 +32,6 @@ HEADERS += \
     qvirtualrealityapi_p.h \
     qvirtualrealityapibackend.h \
     qheadmounteddisplay.h \
-    qvrhmdview.h \
     qt3dvr_global.h \
     qvrcamera.h
 
@@ -49,20 +47,20 @@ INSTALLS += target
 LIBS += -L"C:/develop/OculusSDK/LibOVR/Lib/Windows/x64/Release/VS2015" -lLibOVR
 LIBS += -L"E:/devel/OculusSDK/LibOVR/Lib/Windows/x64/Release/VS2015" -lLibOVR
 
+INCLUDEPATH += "C:/develop/OculusSDK/LibOVR/Include"
+INCLUDEPATH += "E:/devel/OculusSDK/LibOVR/Include"
+
+###### OpenVR ######
+
 #TODO: find_package(LibOpenVR)
 LIBS += -L"C:/develop/openvr/lib/win64" -lopenvr_api
-LIBS += -L"E:/devel/openvr/lib/win64" -lopenvr_api
+LIBS += -L"F:/devel/openvr/lib/win64" -lopenvr_api
 LIBS += -L"C:/develop/openvr/bin/win64" -lopenvr_api
-LIBS += -L"E:/devel/openvr/bin/win64" -lopenvr_api
+LIBS += -L"F:/devel/openvr/bin/win64" -lopenvr_api
+
+INCLUDEPATH += "C:/develop/openvr/headers"
+INCLUDEPATH += "F:/devel/openvr/headers"
 
 #if windows
 LIBS += -ldxgi
 #endif
-
-#TODO: find_package(LibOVR)
-INCLUDEPATH += "C:/develop/OculusSDK/LibOVR/Include"
-INCLUDEPATH += "E:/devel/OculusSDK/LibOVR/Include"
-
-#TODO: find_package(LibOpenVR)
-INCLUDEPATH += "C:/develop/openvr/headers"
-INCLUDEPATH += "E:/devel/openvr/headers"

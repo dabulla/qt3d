@@ -34,8 +34,14 @@ static ovrGraphicsLuid GetDefaultAdapterLuid()
     return luid;
 }
 
+bool VirtualRealityApiOvr::isRuntimeInstalled()
+{
+    ovrResult result = ovr_Initialize(nullptr);
+    return OVR_SUCCESS(result);
+}
+
 VirtualRealityApiOvr::VirtualRealityApiOvr()
-    : m_bothEyesTemp(nullptr)
+    : m_sessionStarted(false)
     , m_sensorSampleTime(0.0)
     , m_frameIndex(0)
     , m_swapChain(nullptr)
@@ -44,45 +50,54 @@ VirtualRealityApiOvr::VirtualRealityApiOvr()
 
 VirtualRealityApiOvr::~VirtualRealityApiOvr()
 {
-    if(m_swapChain != nullptr)
-        delete m_swapChain;
+    // Don't call shutdown. It has been called already at this point.
+    Q_ASSERT(m_swapChain);
 }
 
-bool VirtualRealityApiOvr::isHmdPresent() const
+bool VirtualRealityApiOvr::initializeIfHmdIsPresent()
 {
+    if(!m_sessionStarted) {
+        ovrResult result = ovr_Initialize(nullptr);
+        if (!OVR_SUCCESS(result))
+        {
+            qDebug() << "Failed to initialize libOVR.";
+            return false;
+        }
+        result = ovr_Create(&m_session, &m_luid);
+        if (!OVR_SUCCESS(result))
+        {
+            qDebug() << "Failed to create session libOVR.";
+            return false;
+        }
+        m_sessionStarted = true;
+    }
+    if (memcmp(&m_luid, &GetDefaultAdapterLuid(), sizeof(m_luid))) // If luid that the Rift is on is not the default adapter LUID...
+    {
+        qDebug() << "OpenGL supports only the default graphics adapter.";
+        return false;
+    }
     return true;
 }
 
-bool VirtualRealityApiOvr::supportsSetSurface() const
+bool VirtualRealityApiOvr::isHmdPresent()
 {
-    return false;
+    return initializeIfHmdIsPresent();
 }
 
 void VirtualRealityApiOvr::initialize()
 {
-    qDebug() << "VRRender Init:" << m_frameIndex;
-    ovrResult result = ovr_Initialize(nullptr);
-    if (!OVR_SUCCESS(result))
-    {
-        qDebug() << "Failed to initialize libOVR.";
+    bool hmdPresent = initializeIfHmdIsPresent();
+    if(!hmdPresent)
         return;
-    }
-    result = ovr_Create(&m_session, &m_luid);
-    if (!OVR_SUCCESS(result))
-    {
-        qDebug() << "Failed to create session libOVR.";
-        return;
-    }
-
-    if (memcmp(&m_luid, &GetDefaultAdapterLuid(), sizeof(m_luid))) // If luid that the Rift is on is not the default adapter LUID...
-    {
-        qDebug() << "OpenGL supports only the default graphics adapter.";
-        return;
-    }
-
     m_hmdDesc = ovr_GetHmdDesc(m_session);
     ovr_SetTrackingOriginType(m_session, ovrTrackingOrigin_FloorLevel);
     m_swapChain = new OvrSwapChain(m_session, getRenderTargetSize());
+}
+
+void VirtualRealityApiOvr::shutdown()
+{
+    if(m_swapChain != nullptr)
+        delete m_swapChain;
 }
 
 bool VirtualRealityApiOvr::bindFrambufferObject()
@@ -93,7 +108,6 @@ bool VirtualRealityApiOvr::bindFrambufferObject()
 
 void VirtualRealityApiOvr::swapToHeadset()
 {
-    qDebug() << "Render to Headset:" << m_frameIndex;
     m_swapChain->commit();
 
     ovrLayerEyeFov ld;
@@ -142,29 +156,19 @@ void VirtualRealityApiOvr::getEyeMatrices(QMatrix4x4 &leftEye, QMatrix4x4 &right
     ovrVector3f &posRight = m_eyeRenderPose[ovrEye_Right].Position;
     ovrQuatf orientLeft = m_eyeRenderPose[ovrEye_Left].Orientation;
     ovrQuatf orientRight = m_eyeRenderPose[ovrEye_Right].Orientation;
-    //orientLeft.y *= -1.0f;
-    //orientRight.y *= -1.0f;
 
     Matrix4f finalRollPitchYaw = Matrix4f(orientLeft);
     Vector3f finalUp = finalRollPitchYaw.Transform(Vector3f(0, 1, 0));
     Vector3f finalForward = finalRollPitchYaw.Transform(Vector3f(0, 0, -1));
-    Vector3f shiftedEyePos = Vector3f(0.0,0.0,0.0);//m_p->m_vrCamera->offset().x(), m_p->m_vrCamera->offset().y(), m_p->m_vrCamera->offset().z()) + Vector3f(posLeft) * 100.0f;
-    Matrix4f m = Matrix4f::LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
-    //TODO: don't copy
-    leftEye = QMatrix4x4(m.M[0][0], m.M[0][1], m.M[0][2], m.M[0][3],
-            m.M[1][0], m.M[1][1], m.M[1][2], m.M[1][3],
-            m.M[2][0], m.M[2][1], m.M[2][2], m.M[2][3],
-            m.M[3][0], m.M[3][1], m.M[3][2], m.M[3][3]);
+    Vector3f shiftedEyePos = Vector3f(posLeft) * 100.0f;
+    Vector3f center = shiftedEyePos + finalForward;
+    leftEye.lookAt(QVector3D(posLeft.x, posLeft.y, posLeft.z)*100.f, QVector3D(center.x, center.y, center.z), QVector3D(finalUp.x, finalUp.y, finalUp.z));
     finalRollPitchYaw = Matrix4f(orientRight);
     finalUp = finalRollPitchYaw.Transform(Vector3f(0, 1, 0));
     finalForward = finalRollPitchYaw.Transform(Vector3f(0, 0, -1));
-    //shiftedEyePos = Vector3f(m_p->m_vrCamera->offset().x(), m_p->m_vrCamera->offset().y(), m_p->m_vrCamera->offset().z()) + Vector3f(posRight) * 100.0f;
-    m = Matrix4f::LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
-    //TODO: don't copy
-    rightEye = QMatrix4x4(m.M[0][0], m.M[0][1], m.M[0][2], m.M[0][3],
-                  m.M[1][0], m.M[1][1], m.M[1][2], m.M[1][3],
-                  m.M[2][0], m.M[2][1], m.M[2][2], m.M[2][3],
-            m.M[3][0], m.M[3][1], m.M[3][2], m.M[3][3]);
+    shiftedEyePos = Vector3f(posRight) * 100.0f;
+    center = shiftedEyePos + finalForward;
+    rightEye.lookAt(QVector3D(posRight.x, posRight.y, posRight.z)*100.f, QVector3D(center.x, center.y, center.z), QVector3D(finalUp.x, finalUp.y, finalUp.z));
 }
 
 void VirtualRealityApiOvr::getProjectionMatrices(QMatrix4x4 &leftProjection, QMatrix4x4 &rightProjection)

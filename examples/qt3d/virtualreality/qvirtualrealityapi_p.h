@@ -48,6 +48,18 @@ public:
         }
 #endif
     }
+    static bool isRuntimeInstalled(QVirtualRealityApi::Type vendor) {
+#if(QT3DVR_COMPILE_WITH_OVR)
+        if(QVirtualRealityApi::Ovr == vendor) {
+            return VirtualRealityApiOvr::isRuntimeInstalled();
+        }
+#endif
+#if(QT3DVR_COMPILE_WITH_OPENVR)
+        if(QVirtualRealityApi::OpenVR == vendor) {
+            return VirtualRealityApiOpenVR::isRuntimeInstalled();
+        }
+#endif
+    }
     void initialize() {
         if(!m_initialized) {
             Q_ASSERT(m_apibackend != nullptr);

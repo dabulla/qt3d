@@ -9,8 +9,9 @@ class QVrRendertarget;
 class VirtualRealityApiOpenVR : public Qt3DVirtualReality::QVirtualRealityApiBackend
 {
 public:
+    static bool isRuntimeInstalled();
     VirtualRealityApiOpenVR();
-    bool isHmdPresent() const;
+    bool isHmdPresent();
 
     void initialize();
     void shutdown();

@@ -42,11 +42,11 @@ QMatrix4x4 VirtualRealityApiOpenVR::getHmdMatrixProjectionEye( vr::Hmd_Eye nEye 
     vr::HmdMatrix44_t mat = m_hmd->GetProjectionMatrix( nEye, nearClip, farClip );
 
     return QMatrix4x4(
-        mat.m[0][0], mat.m[1][0], mat.m[2][0], mat.m[3][0],
-        mat.m[0][1], mat.m[1][1], mat.m[2][1], mat.m[3][1],
-        mat.m[0][2], mat.m[1][2], mat.m[2][2], mat.m[3][2],
-        mat.m[0][3], mat.m[1][3], mat.m[2][3], mat.m[3][3]
-    ).transposed();
+        mat.m[0][0], mat.m[0][1], mat.m[0][2], 0.0,
+        mat.m[1][0], mat.m[1][1], mat.m[1][2], 0.0,
+        mat.m[2][0], mat.m[2][1], mat.m[2][2], 0.0,
+        mat.m[3][0], mat.m[3][1], mat.m[3][2], 1.0f
+    );
 }
 
 //-----------------------------------------------------------------------------
@@ -59,13 +59,13 @@ QMatrix4x4 VirtualRealityApiOpenVR::getHmdMatrixPoseEye( vr::Hmd_Eye nEye )
 
     vr::HmdMatrix34_t matEyeRight = m_hmd->GetEyeToHeadTransform( nEye );
     QMatrix4x4 matrixObj(
-        matEyeRight.m[0][0], matEyeRight.m[1][0], matEyeRight.m[2][0], 0.0,
-        matEyeRight.m[0][1], matEyeRight.m[1][1], matEyeRight.m[2][1], 0.0,
-        matEyeRight.m[0][2], matEyeRight.m[1][2], matEyeRight.m[2][2], 0.0,
-        matEyeRight.m[0][3], matEyeRight.m[1][3], matEyeRight.m[2][3], 1.0f
-        );
+        matEyeRight.m[0][0], matEyeRight.m[0][1], matEyeRight.m[0][2], 0.0,
+        matEyeRight.m[1][0], matEyeRight.m[1][1], matEyeRight.m[1][2], 0.0,
+        matEyeRight.m[2][0], matEyeRight.m[2][1], matEyeRight.m[2][2], 0.0,
+        matEyeRight.m[3][0], matEyeRight.m[3][1], matEyeRight.m[3][2], 1.0f
+    );
 
-    return matrixObj.inverted().transposed();
+    return matrixObj.inverted();
 }
 
 //-----------------------------------------------------------------------------
@@ -143,13 +143,18 @@ void VirtualRealityApiOpenVR::setupCameras()
 QMatrix4x4 VirtualRealityApiOpenVR::convertSteamVrMatrixToQMatrix4x4( const vr::HmdMatrix34_t &matPose )
 {
     QMatrix4x4 matrixObj(
-        matPose.m[0][0], matPose.m[1][0], matPose.m[2][0], 0.0,
-        matPose.m[0][1], matPose.m[1][1], matPose.m[2][1], 0.0,
-        matPose.m[0][2], matPose.m[1][2], matPose.m[2][2], 0.0,
-        matPose.m[0][3], matPose.m[1][3], matPose.m[2][3], 1.0f
-        );
-    return matrixObj.transposed();
+        matPose.m[0][0], matPose.m[0][1], matPose.m[0][2], 0.0,
+        matPose.m[1][0], matPose.m[1][1], matPose.m[1][2], 0.0,
+        matPose.m[2][0], matPose.m[2][1], matPose.m[2][2], 0.0,
+        matPose.m[3][0], matPose.m[3][1], matPose.m[3][2], 1.0f
+    );
+    return matrixObj;
 }
+bool VirtualRealityApiOpenVR::isRuntimeInstalled()
+{
+    return vr::VR_IsRuntimeInstalled();
+}
+
 VirtualRealityApiOpenVR::VirtualRealityApiOpenVR()
     : m_fbo(nullptr)
     , m_poseNewEnough(false)
@@ -157,9 +162,9 @@ VirtualRealityApiOpenVR::VirtualRealityApiOpenVR()
 
 }
 
-bool VirtualRealityApiOpenVR::isHmdPresent() const
+bool VirtualRealityApiOpenVR::isHmdPresent()
 {
-    return true; //TODO
+    return vr::VR_IsHmdPresent();
 }
 
 void VirtualRealityApiOpenVR::initialize()

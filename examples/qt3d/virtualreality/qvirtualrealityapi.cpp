@@ -3,31 +3,42 @@
 #include "qvirtualrealityapi_p.h"
 
 #include <QOpenGLContext>
+namespace Qt3DVirtualReality {
 
-Qt3DVirtualReality::QVirtualRealityApi::QVirtualRealityApi()
-    : Qt3DVirtualReality::QVirtualRealityApi(*new Qt3DVirtualReality::QVirtualRealityApiPrivate)
-{
-
-}
-
-Qt3DVirtualReality::QVirtualRealityApi::QVirtualRealityApi(Qt3DVirtualReality::QVirtualRealityApi::Type type)
+QVirtualRealityApi::QVirtualRealityApi(Qt3DVirtualReality::QVirtualRealityApi::Type type)
     : QVirtualRealityApi()
 {
     Q_D(QVirtualRealityApi);
     d->setType(type);
 }
 
-Qt3DVirtualReality::QVirtualRealityApi::~QVirtualRealityApi()
-{
+QVirtualRealityApi::QVirtualRealityApi()
+    : Qt3DVirtualReality::QVirtualRealityApi(*new Qt3DVirtualReality::QVirtualRealityApiPrivate)
+{}
 
+
+QVirtualRealityApi::QVirtualRealityApi(Qt3DVirtualReality::QVirtualRealityApiPrivate &dd, QObject *parent)
+    : QObject(dd, parent)
+{}
+
+QVirtualRealityApi::~QVirtualRealityApi()
+{
+    Q_D(QVirtualRealityApi);
+    d->m_apibackend->shutdown();
 }
 
-bool Qt3DVirtualReality::QVirtualRealityApi::isRuntimeInstalled(Qt3DVirtualReality::QVirtualRealityApi::Type type)
+bool QVirtualRealityApi::isHmdPresent()
 {
-    return true;
+    Q_D(QVirtualRealityApi);
+    return d->m_apibackend->isHmdPresent();
 }
 
-Qt3DVirtualReality::QHeadMountedDisplay* Qt3DVirtualReality::QVirtualRealityApi::getHmd(int hmdId, const QHeadMountedDisplayFormat &format)
+bool QVirtualRealityApi::isRuntimeInstalled(Qt3DVirtualReality::QVirtualRealityApi::Type type)
+{
+    return QVirtualRealityApiPrivate::isRuntimeInstalled(type);
+}
+
+QHeadMountedDisplay* QVirtualRealityApi::getHmd(int hmdId, const QHeadMountedDisplayFormat &format)
 {
     Q_D(QVirtualRealityApi);
     Qt3DVirtualReality::QHeadMountedDisplay *hmd(new Qt3DVirtualReality::QHeadMountedDisplay(hmdId, format, this, d->m_apibackend));
@@ -35,9 +46,4 @@ Qt3DVirtualReality::QHeadMountedDisplay* Qt3DVirtualReality::QVirtualRealityApi:
     d->initialize();
     return hmd;
 }
-
-Qt3DVirtualReality::QVirtualRealityApi::QVirtualRealityApi(Qt3DVirtualReality::QVirtualRealityApiPrivate &dd, QObject *parent)
-    : QObject(dd, parent)
-{
-
 }

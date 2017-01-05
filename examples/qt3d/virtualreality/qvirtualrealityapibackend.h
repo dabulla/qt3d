@@ -15,9 +15,10 @@ namespace Qt3DVirtualReality {
 class QVirtualRealityApiBackend
 {
 public:
-    virtual bool isHmdPresent() const = 0;
+    virtual bool isHmdPresent() = 0;
 
     virtual void initialize() = 0;
+    virtual void shutdown() = 0;
     virtual bool bindFrambufferObject() = 0;
 
     virtual qreal refreshRate(int hmdId) const = 0;

@@ -3,24 +3,20 @@
 
 #include "../../qvirtualrealityapibackend.h"
 #include "OVR_CAPI_GL.h"
-class QSurfaceFormat;
-class QVrRendertarget;
+
 class OvrSwapChain;
 
 class VirtualRealityApiOvr : public Qt3DVirtualReality::QVirtualRealityApiBackend
 {
 public:
+    static bool isRuntimeInstalled();
     VirtualRealityApiOvr();
     ~VirtualRealityApiOvr();
-    bool isHmdPresent() const;
-    bool supportsSetSurface() const;
+    bool isHmdPresent();
 
     void initialize();
+    void shutdown();
     bool bindFrambufferObject();
-    //void createSurface(int hmdId, const QSize &size, const QSurfaceFormat &format);
-    //GLuint currentTextureId();
-    //GLuint setSurface(int hmdId, GLuint textureId);
-    //void destroySurface(int hmdId, GLuint textureId);
 
     qreal refreshRate(int hmdId) const;
     QMatrix4x4 headPose(int hmdId);
@@ -32,15 +28,17 @@ public:
 
     void getProjectionMatrices(QMatrix4x4 &leftProjection, QMatrix4x4 &rightProjection);
 private:
+    bool m_sessionStarted;
     ovrSession m_session;
     ovrGraphicsLuid m_luid;
     //TO DO: decouple using hmdId
     ovrHmdDesc m_hmdDesc;
     ovrPosef   m_eyeRenderPose[2];
-    QVrRendertarget *m_bothEyesTemp;
     double m_sensorSampleTime;
     long long m_frameIndex;
     OvrSwapChain *m_swapChain;
+
+    bool initializeIfHmdIsPresent();
 };
 
 #endif
