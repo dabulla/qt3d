@@ -3,29 +3,25 @@
 
 #include "qvirtualrealityapi.h"
 
+#include <QtOpenGL/QGL>
+#include <private/qobject_p.h>
+#include "qvirtualrealityapibackend.h"
+
 #define QT3DVR_COMPILE_WITH_OVR true
-#define QT3DVR_COMPILE_WITH_OPENVR false
+#define QT3DVR_COMPILE_WITH_OPENVR true
 #define QT3DVR_COMPILE_WITH_OSVR false
 
 #if(QT3DVR_COMPILE_WITH_OVR)
-#  include "backends/ovr/vrapiovr.h"
+#  include "backends/ovr/virtualrealityapiovr.h"
 #endif
 #if(QT3DVR_COMPILE_WITH_OPENVR)
-#  include "backends/openvr/vrapiopenvr.h"
+#  include "backends/openvr/virtualrealityapiopenvr.h"
 #endif
 #if(QT3DVR_COMPILE_WITH_OSVR)
 #  include "backends/osvr/vrapiosvr.h"
 #endif
 
-#include <QtOpenGL/QGL>
-#include <private/qobject_p.h>
-#include "qvirtualrealityapibackend.h"
-
 QT_BEGIN_NAMESPACE
-
-#if(QT3DVR_COMPILE_WITH_OVR)
-#  include "backends/ovr/vrapiovr.h"
-#endif
 
 namespace Qt3DVirtualReality {
 
@@ -42,11 +38,26 @@ public:
 #if(QT3DVR_COMPILE_WITH_OVR)
         if(QVirtualRealityApi::Ovr == vendor) {
             m_apibackend = new VirtualRealityApiOvr();
+            return;
+        }
+#endif
+#if(QT3DVR_COMPILE_WITH_OPENVR)
+        if(QVirtualRealityApi::OpenVR == vendor) {
+            m_apibackend = new VirtualRealityApiOpenVR();
+            return;
         }
 #endif
     }
+    void initialize() {
+        if(!m_initialized) {
+            Q_ASSERT(m_apibackend != nullptr);
+            m_apibackend->initialize();
+            m_initialized = true;
+        }
+    }
     QVirtualRealityApiPrivate()
       : m_apibackend(nullptr)
+      , m_initialized(false)
     {
 
     }
@@ -55,6 +66,8 @@ public:
         if(m_apibackend)
             delete m_apibackend;
     }
+private:
+    bool m_initialized;
 };
 
 }

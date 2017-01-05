@@ -55,15 +55,18 @@ Viewport {
 
     property alias leftCamera: leftCameraSelector.camera
     property alias rightCamera: rightCameraSelector.camera
-    property alias window: surfaceSelector.surface
+//    property alias window: surfaceSelector.surface
 
     RenderSurfaceSelector {
         id: surfaceSelector
+        surface: _hmd.surface
+        externalRenderTargetSize: _hmd.renderTargetSize
 
         // ColorMask is reset by default
         // By default reset to the default if not specified
         ClearBuffers {
             buffers: ClearBuffers.ColorDepthBuffer
+            clearColor: Qt.rgba(0.2,0.9,0.9,0.5)
             NoDraw {} // We just want to clear the buffers
         }
 

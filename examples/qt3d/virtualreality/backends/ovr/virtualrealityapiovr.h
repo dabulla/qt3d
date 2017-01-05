@@ -1,5 +1,5 @@
-#ifndef VRAPIOVR_H
-#define VRAPIOVR_H
+#ifndef VIRTUALREALITYAPIOVR_H
+#define VIRTUALREALITYAPIOVR_H
 
 #include "../../qvirtualrealityapibackend.h"
 #include "OVR_CAPI_GL.h"
@@ -13,7 +13,9 @@ public:
     bool isHmdPresent() const;
     bool supportsSetSurface() const;
 
-    GLuint createSurface(int hmdId, const QSize &size, const QSurfaceFormat &format);
+    void initialize();
+    void createSurface(int hmdId, const QSize &size, const QSurfaceFormat &format);
+    GLuint currentTextureId();
     GLuint setSurface(int hmdId, GLuint textureId);
     void destroySurface(int hmdId, GLuint textureId);
 
@@ -25,6 +27,7 @@ public:
 
     void getEyeMatrices(QMatrix4x4 &leftEye, QMatrix4x4 &rightEye);
 
+    void getProjectionMatrices(QMatrix4x4 &leftProjection, QMatrix4x4 &rightProjection);
 private:
     ovrSession m_session;
     ovrGraphicsLuid m_luid;

@@ -11,8 +11,7 @@ SOURCES += \
 
 OTHER_FILES += \
     main.qml \
-    *.qml \
-    HousePlant.qml
+    *.qml
 
 RESOURCES += \
     vr.qrc

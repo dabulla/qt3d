@@ -41,6 +41,8 @@ class QVirtualRealityApiBackend;
 
 class QT3DVR_EXPORT QHeadMountedDisplay : public QObject /*: public QQuickItem*/ {
     Q_OBJECT
+    Q_PROPERTY(QObject* surface READ surface NOTIFY surfaceChanged)
+    Q_PROPERTY(QSize renderTargetSize READ renderTargetSize NOTIFY renderTargetSizeChanged)
 
 public:
     QHeadMountedDisplay(int hmdId, const QHeadMountedDisplayFormat &formathmd, QVirtualRealityApi *api, QVirtualRealityApiBackend *apibackend);
@@ -55,10 +57,16 @@ public:
     // Hmd specific
     qreal refreshRate();
     qreal superSamplingFactor();
-    QSize size();
 
+    QObject* surface() const;
+    QSize renderTargetSize() const;
+
+    QOpenGLContext *context();
 signals:
     void requestRun();
+    void surfaceChanged(QSurface* surface);
+    void renderTargetSizeChanged(QSize renderTargetSize);
+
 public slots:
     void run();
 

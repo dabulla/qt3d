@@ -17,7 +17,8 @@ DEFINES += QT_NO_FOREACH
 CONFIG += c++11
 
 SOURCES += \
-    backends/ovr/vrapiovr.cpp \
+    backends/ovr/virtualrealityapiovr.cpp \
+    backends/openvr/virtualrealityapiopenvr.cpp \
     qvirtualrealityapi.cpp \
     qheadmounteddisplay.cpp \
     qvrhmdview.cpp \
@@ -25,7 +26,8 @@ SOURCES += \
     qvrcamera.cpp
 
 HEADERS += \
-    backends/ovr/vrapiovr.h \
+    backends/ovr/virtualrealityapiovr.h \
+    backends/openvr/virtualrealityapiopenvr.h \
     qvirtualrealityapi.h \
     qvirtualrealityapi_p.h \
     qvirtualrealityapibackend.h \
@@ -47,6 +49,12 @@ INSTALLS += target
 LIBS += -L"C:/develop/OculusSDK/LibOVR/Lib/Windows/x64/Release/VS2015" -lLibOVR
 LIBS += -L"E:/devel/OculusSDK/LibOVR/Lib/Windows/x64/Release/VS2015" -lLibOVR
 
+#TODO: find_package(LibOpenVR)
+LIBS += -L"C:/develop/openvr/lib/win64" -lopenvr_api
+LIBS += -L"E:/devel/openvr/lib/win64" -lopenvr_api
+LIBS += -L"C:/develop/openvr/bin/win64" -lopenvr_api
+LIBS += -L"E:/devel/openvr/bin/win64" -lopenvr_api
+
 #if windows
 LIBS += -ldxgi
 #endif
@@ -54,3 +62,7 @@ LIBS += -ldxgi
 #TODO: find_package(LibOVR)
 INCLUDEPATH += "C:/develop/OculusSDK/LibOVR/Include"
 INCLUDEPATH += "E:/devel/OculusSDK/LibOVR/Include"
+
+#TODO: find_package(LibOpenVR)
+INCLUDEPATH += "C:/develop/openvr/headers"
+INCLUDEPATH += "E:/devel/openvr/headers"

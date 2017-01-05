@@ -20,6 +20,8 @@
 #include <Qt3DRender/private/qrenderaspect_p.h>
 #include "qvrcamera.h"
 
+#include <QOpenGLDebugLogger>
+
 QT_BEGIN_NAMESPACE
 
 namespace Qt3DVirtualReality {
@@ -64,23 +66,39 @@ QHeadMountedDisplay::QHeadMountedDisplay(int hmdId, const QHeadMountedDisplayFor
     , m_surface(new QOffscreenSurface)
     , m_rootItem(nullptr)
 {
+    //Note: m_apibackend is not yet initialized here. Wait for openGLContext creation
     //QSurface::setSurfaceType(QSurface::OpenGLSurface);
 
     QSurfaceFormat format;
-#ifdef QT_OPENGL_ES_2
-    format.setRenderableType(QSurfaceFormat::OpenGLES);
-#else
-    if (QOpenGLContext::openGLModuleType() == QOpenGLContext::LibGL) {
-        format.setVersion(4, 3);
-        format.setProfile(QSurfaceFormat::CoreProfile);
-    }
-#endif
-    format.setDepthBufferSize(24);
-    format.setSamples(4);
+    // Qt Quick may need a depth and stencil buffer. Always make sure these are available.
+    format.setDepthBufferSize(16);
     format.setStencilBufferSize(8);
-    m_surface->setFormat(format);
-    QSurfaceFormat::setDefaultFormat(format);
+    format.setProfile(QSurfaceFormat::CoreProfile);
+    format.setOption(QSurfaceFormat::DebugContext);
+
+    m_context = new QOpenGLContext;
+    m_context->setFormat(format);
+    m_context->create();
+
+
+    m_surface = new QOffscreenSurface;
+    // Pass m_context->format(), not format. Format does not specify and color buffer
+    // sizes, while the context, that has just been created, reports a format that has
+    // these values filled in. Pass this to the offscreen surface to make sure it will be
+    // compatible with the context's configuration.
+    m_surface->setFormat(m_context->format());
     m_surface->create();
+    m_context->makeCurrent(m_surface);
+
+    QOpenGLDebugLogger *logger = new QOpenGLDebugLogger(this);
+
+    logger->initialize();
+    connect(logger, &QOpenGLDebugLogger::messageLogged, this, [](const QOpenGLDebugMessage &debugMessage){
+        qDebug() << debugMessage;
+    }, Qt::DirectConnection);
+    logger->enableMessages();
+    logger->startLogging(QOpenGLDebugLogger::SynchronousLogging);
+    emit surfaceChanged(m_surface);
 
     m_engine.reset(new Qt3DCore::Quick::QQmlAspectEngine);
     m_renderAspect = new Qt3DRender::QRenderAspect(Qt3DRender::QRenderAspect::Synchronous);
@@ -151,6 +169,21 @@ qreal QHeadMountedDisplay::refreshRate()
     return m_apibackend->refreshRate(m_hmdId);
 }
 
+QObject *QHeadMountedDisplay::surface() const
+{
+    return qobject_cast<QObject*>(m_surface);
+}
+
+QSize QHeadMountedDisplay::renderTargetSize() const
+{
+    return m_apibackend->getRenderSurfaceSize();
+}
+
+QOpenGLContext *QHeadMountedDisplay::context()
+{
+    return m_context;
+}
+
 void QHeadMountedDisplay::onSceneCreated(QObject *rootObject)
 {
     Q_ASSERT(rootObject);
@@ -170,6 +203,23 @@ void QHeadMountedDisplay::onSceneCreated(QObject *rootObject)
 //        }
 //    }
 
+    if(m_rootItem) {
+
+        QVRCamera *vrCamera = m_rootItem->findChild<QVRCamera *>();
+        if(vrCamera) {
+            QMatrix4x4 projL;
+            QMatrix4x4 projR;
+            m_apibackend->getProjectionMatrices(projL, projR);
+            vrCamera->setProjections(projL, projR);
+            vrCamera->setLeftNormalizedViewportRect(QRectF(0.0f, 0.0f, 0.5f, 1.0f));
+            vrCamera->setRightNormalizedViewportRect(QRectF(0.5f, 0.0f, 0.5f, 1.0f));
+        } else {
+            Q_ASSERT(vrCamera); //TO DO logging
+        }
+    } else {
+        Q_ASSERT(m_rootItem); //TO DO logging
+    }
+
     // Set ourselves up as a source of input events for the input aspect
     Qt3DInput::QInputSettings *inputSettings = rootObject->findChild<Qt3DInput::QInputSettings *>();
     if (inputSettings) {
@@ -181,9 +231,24 @@ void QHeadMountedDisplay::onSceneCreated(QObject *rootObject)
 
 void QHeadMountedDisplay::run() {
 
-    QOpenGLContext::currentContext()->makeCurrent(m_surface);
+    m_context->makeCurrent(m_surface);
+
+
+    QOpenGLFramebufferObjectFormat format;
+    format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
+    format.setTextureTarget(GL_TEXTURE_2D);
+    format.setSamples(0);
+    format.setMipmap(false);
+
+    QSize renderTargetSize = m_apibackend->getRenderSurfaceSize();
+    if(m_fbo)
+        delete m_fbo;
+    m_fbo = new QOpenGLFramebufferObject(renderTargetSize, format, m_apibackend->currentTextureId() );
     m_fbo->bind();
-    Q_ASSERT(false);//TO DO: wrong thread for m_fbo->bind(). need QSGNode. What about createTextureFromId?
+
+    //glViewport(0, 0, renderTargetSize.width(), renderTargetSize.height());
+
+//    Q_ASSERT(false);//TO DO: wrong thread for m_fbo->bind(). need QSGNode. What about createTextureFromId?
 //        if (m_aspectEngine->rootEntity() != m_item->entity())
 //            scheduleRootEntityChange();
     //TODO: QVrSelector. This is the object with all parameters then
@@ -192,6 +257,7 @@ void QHeadMountedDisplay::run() {
         vrCamera = m_rootItem->findChild<QVRCamera *>();
     QMatrix4x4 leftEye;
     QMatrix4x4 rightEye;
+    QMatrix4x4 tmp;
     m_apibackend->getEyeMatrices(leftEye, rightEye);
     if(vrCamera != nullptr)
         vrCamera->update(leftEye, rightEye);
@@ -204,14 +270,15 @@ void QHeadMountedDisplay::run() {
 
 void QHeadMountedDisplay::setWindowSurface(QObject *rootObject)
 {
-    if(!(m_context = QOpenGLContext::currentContext()))
-    {
-        m_context = new QOpenGLContext();
-        m_context->create();
-        m_context->makeCurrent(m_surface);
-        Q_ASSERT(QOpenGLContext::currentContext() != nullptr);
-        static_cast<Qt3DRender::QRenderAspectPrivate*>(Qt3DRender::QRenderAspectPrivate::get(m_renderAspect))->renderInitialize(m_context);
-    }
+    //    if(!(m_context = QOpenGLContext::currentContext()))
+    //    {
+    //        m_context = new QOpenGLContext();
+    //        m_context->create();
+    //        m_context->makeCurrent(m_surface);
+    //        Q_ASSERT(QOpenGLContext::currentContext() != nullptr);
+//    }
+    m_context->makeCurrent(m_surface);
+    static_cast<Qt3DRender::QRenderAspectPrivate*>(Qt3DRender::QRenderAspectPrivate::get(m_renderAspect))->renderInitialize(m_context);
     Qt3DRender::QRenderSurfaceSelector *surfaceSelector = Qt3DRender::QRenderSurfaceSelectorPrivate::find(rootObject);
     if (surfaceSelector)
         surfaceSelector->setSurface(m_surface);
@@ -222,7 +289,7 @@ void QHeadMountedDisplay::setWindowSurface(QObject *rootObject)
     const QSize texSize(m_apibackend->getRenderSurfaceSize());
 
     //TODO: At the moment FBO is recreated each frame
-    if (!m_fbo) {
+    //if (!m_fbo) {
         QOpenGLFramebufferObjectFormat format;
         format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
         format.setTextureTarget(GL_TEXTURE_2D);
@@ -230,11 +297,11 @@ void QHeadMountedDisplay::setWindowSurface(QObject *rootObject)
         format.setMipmap(false);
 
         QSurfaceFormat notUsedTodo;
-        GLuint texId = m_apibackend->createSurface(m_hmdId, texSize, notUsedTodo);
-
-        m_fbo = new QOpenGLFramebufferObject(texSize, format, texId );
+        m_apibackend->createSurface(m_hmdId, texSize, notUsedTodo);
+        emit renderTargetSizeChanged(texSize);
+        //m_fbo = new QOpenGLFramebufferObject(texSize, format, texId );
         //m_quickWindow->setRenderTarget(m_fbo);
-    }
+    //}
 //    if(!sizeOkay)
 //    {
 //        // Size of m_window can differ from m_quickWindow and rendertarget size

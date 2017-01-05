@@ -2,6 +2,8 @@
 #include "qheadmounteddisplay.h"
 #include "qvirtualrealityapi_p.h"
 
+#include <QOpenGLContext>
+
 Qt3DVirtualReality::QVirtualRealityApi::QVirtualRealityApi()
     : Qt3DVirtualReality::QVirtualRealityApi(*new Qt3DVirtualReality::QVirtualRealityApiPrivate)
 {
@@ -27,8 +29,11 @@ bool Qt3DVirtualReality::QVirtualRealityApi::isRuntimeInstalled(Qt3DVirtualReali
 
 Qt3DVirtualReality::QHeadMountedDisplay* Qt3DVirtualReality::QVirtualRealityApi::getHmd(int hmdId, const QHeadMountedDisplayFormat &format)
 {
-    Q_D(const QVirtualRealityApi);
-    return new Qt3DVirtualReality::QHeadMountedDisplay(hmdId, format, this, d->m_apibackend);
+    Q_D(QVirtualRealityApi);
+    Qt3DVirtualReality::QHeadMountedDisplay *hmd(new Qt3DVirtualReality::QHeadMountedDisplay(hmdId, format, this, d->m_apibackend));
+    hmd->context()->makeCurrent(static_cast<QOffscreenSurface*>(hmd->surface()));
+    d->initialize();
+    return hmd;
 }
 
 Qt3DVirtualReality::QVirtualRealityApi::QVirtualRealityApi(Qt3DVirtualReality::QVirtualRealityApiPrivate &dd, QObject *parent)

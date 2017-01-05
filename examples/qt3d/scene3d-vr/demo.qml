@@ -100,7 +100,7 @@ Rectangle {
             // Camera
             VrCamera {
                 id: vrCam
-                offset: Qt.vector3d(30.0,0.0,50.0)
+                offset: Qt.vector3d(80.0,-90.0,0.0)
                 //offsetOrientation:
                 //offset: cameraProps.circlePosition.plus(Qt.vector3d(0, 45 * Math.sin(cameraProps.circleRotation * 2), 0)).plus(cameraProps.tan.times(-2))
             }
@@ -185,6 +185,7 @@ Rectangle {
                                                  Math.cos(cameraProps.circleRotation * -2) * obstaclesRepeater.radius)
                         rotation: fromAxesAndAngles(Qt.vector3d(1.0, 0.0, 0.0), planeTransform.rollAngle,
                                                     Qt.vector3d(0.0, 1.0, 0.0), cameraProps.circleRotation * -2 * 180 / Math.PI + 180)
+                        scale3D: Qt.vector3d(2.0, 10.0, 2.0)
                     },
                     PhongMaterial {
                         shininess: 20.0
@@ -220,7 +221,7 @@ Rectangle {
             // Torus obsctacles
             NodeInstantiator {
                 id: obstaclesRepeater
-                model: 4
+                model: 40
                 readonly property real radius: 130.0;
                 readonly property real det: 1.0 / model
                 delegate: Entity {
@@ -237,7 +238,7 @@ Rectangle {
                             translation: Qt.vector3d(obstaclesRepeater.radius * Math.cos(transform.angle),
                                                      0.0,
                                                      obstaclesRepeater.radius * Math.sin(transform.angle))
-                            rotation: fromAxisAndAngle(Qt.vector3d(0.0, 1.0, 0.0), transform.angle * 180 / Math.PI)
+                            rotation: fromAxisAndAngle(Qt.vector3d(0.0, 1.0, 0.0), -transform.angle * 180 / Math.PI)
                         },
                         PhongMaterial {
                             diffuse: Qt.rgba(Math.abs(Math.cos(transform.angle)), 204 / 255, 75 / 255, 1)

@@ -1,4 +1,4 @@
-#include "vrapiovr.h"
+#include "virtualrealityapiovr.h"
 
 #include "Extras/OVR_Math.h"
 #include "OVR_CAPI_GL.h"
@@ -39,6 +39,20 @@ VirtualRealityApiOvr::VirtualRealityApiOvr()
      m_sensorSampleTime(0.0),
      m_frameIndex(0)
 {
+}
+
+bool VirtualRealityApiOvr::isHmdPresent() const
+{
+    return true;
+}
+
+bool VirtualRealityApiOvr::supportsSetSurface() const
+{
+    return false;
+}
+
+void VirtualRealityApiOvr::initialize()
+{
     qDebug() << "VRRender Init:" << m_frameIndex;
     ovrResult result = ovr_Initialize(nullptr);
     if (!OVR_SUCCESS(result))
@@ -62,17 +76,7 @@ VirtualRealityApiOvr::VirtualRealityApiOvr()
     m_hmdDesc = ovr_GetHmdDesc(m_session);
 }
 
-bool VirtualRealityApiOvr::isHmdPresent() const
-{
-    return true;
-}
-
-bool VirtualRealityApiOvr::supportsSetSurface() const
-{
-    return false;
-}
-
-GLuint VirtualRealityApiOvr::createSurface(int hmdId, const QSize &size, const QSurfaceFormat &format)
+void VirtualRealityApiOvr::createSurface(int hmdId, const QSize &size, const QSurfaceFormat &format)
 {
     ovrSizei rtSize;
     if(size.width() == 0 || size.height() == 0) {
@@ -95,6 +99,10 @@ GLuint VirtualRealityApiOvr::createSurface(int hmdId, const QSize &size, const Q
 
     m_bothEyesTemp = new QVrRendertarget(m_session, rtSize);
     ovr_SetTrackingOriginType(m_session, ovrTrackingOrigin_FloorLevel);
+}
+
+GLuint VirtualRealityApiOvr::currentTextureId()
+{
     return m_bothEyesTemp->texId();
 }
 
@@ -165,6 +173,7 @@ void VirtualRealityApiOvr::getEyeMatrices(QMatrix4x4 &leftEye, QMatrix4x4 &right
     Vector3f finalForward = finalRollPitchYaw.Transform(Vector3f(0, 0, -1));
     Vector3f shiftedEyePos = Vector3f(0.0,0.0,0.0);//m_p->m_vrCamera->offset().x(), m_p->m_vrCamera->offset().y(), m_p->m_vrCamera->offset().z()) + Vector3f(posLeft) * 100.0f;
     Matrix4f m = Matrix4f::LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
+    //TODO: don't copy
     leftEye = QMatrix4x4(m.M[0][0], m.M[0][1], m.M[0][2], m.M[0][3],
             m.M[1][0], m.M[1][1], m.M[1][2], m.M[1][3],
             m.M[2][0], m.M[2][1], m.M[2][2], m.M[2][3],
@@ -174,10 +183,29 @@ void VirtualRealityApiOvr::getEyeMatrices(QMatrix4x4 &leftEye, QMatrix4x4 &right
     finalForward = finalRollPitchYaw.Transform(Vector3f(0, 0, -1));
     //shiftedEyePos = Vector3f(m_p->m_vrCamera->offset().x(), m_p->m_vrCamera->offset().y(), m_p->m_vrCamera->offset().z()) + Vector3f(posRight) * 100.0f;
     m = Matrix4f::LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
+    //TODO: don't copy
     rightEye = QMatrix4x4(m.M[0][0], m.M[0][1], m.M[0][2], m.M[0][3],
                   m.M[1][0], m.M[1][1], m.M[1][2], m.M[1][3],
                   m.M[2][0], m.M[2][1], m.M[2][2], m.M[2][3],
-                  m.M[3][0], m.M[3][1], m.M[3][2], m.M[3][3]);
+            m.M[3][0], m.M[3][1], m.M[3][2], m.M[3][3]);
+    qDebug() << leftEye << m_sensorSampleTime << "sampled";
+}
+
+void VirtualRealityApiOvr::getProjectionMatrices(QMatrix4x4 &leftProjection, QMatrix4x4 &rightProjection)
+{
+    Matrix4f   projLeft   = ovrMatrix4f_Projection(m_hmdDesc.DefaultEyeFov[ovrEye_Left], 0.2f, 1000.0f, ovrProjection_None);
+    Matrix4f   projRight  = ovrMatrix4f_Projection(m_hmdDesc.DefaultEyeFov[ovrEye_Right], 0.2f, 1000.0f, ovrProjection_None);
+    QMatrix4x4 projL(projLeft.M[0][0], projLeft.M[0][1], projLeft.M[0][2], projLeft.M[0][3],
+                     projLeft.M[1][0], projLeft.M[1][1], projLeft.M[1][2], projLeft.M[1][3],
+                     projLeft.M[2][0], projLeft.M[2][1], projLeft.M[2][2], projLeft.M[2][3],
+                     projLeft.M[3][0], projLeft.M[3][1], projLeft.M[3][2], projLeft.M[3][3]);
+    QMatrix4x4 projR(projRight.M[0][0], projRight.M[0][1], projRight.M[0][2], projRight.M[0][3],
+                     projRight.M[1][0], projRight.M[1][1], projRight.M[1][2], projRight.M[1][3],
+                     projRight.M[2][0], projRight.M[2][1], projRight.M[2][2], projRight.M[2][3],
+                     projRight.M[3][0], projRight.M[3][1], projRight.M[3][2], projRight.M[3][3]);
+    leftProjection = projL;
+    rightProjection = projR;
+    //TODO: don't copy
 }
 
 qreal VirtualRealityApiOvr::refreshRate(int hmdId) const
