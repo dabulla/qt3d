@@ -254,6 +254,11 @@ QSize VirtualRealityApiOpenVR::getRenderTargetSize()
     return QSize(width*2, height);
 }
 
+int VirtualRealityApiOpenVR::timeUntilNextFrame()
+{
+    return 1000/90;
+}
+
 void VirtualRealityApiOpenVR::swapToHeadset()
 {
     vr::Texture_t leftEyeTexture = {(void*)m_fbo->texture(), vr::TextureType_OpenGL, vr::ColorSpace_Gamma };

@@ -35,18 +35,23 @@ class Qt3DQuickVirtualRealityIncubationController : public QObject, public QQmlI
 public:
     explicit Qt3DQuickVirtualRealityIncubationController(QHeadMountedDisplay *hmd)
         : QObject(hmd)
-        , m_incubationTime(std::max(1, int(1000 / hmd->refreshRate()) / 3))
+        , m_hmd(hmd)
+        //, m_incubationTime(std::max(1, int(1000 / hmd->refreshRate()) / 3)) // Allow incubation for 1/3 of a frame.
     {
         startTimer(hmd->refreshRate());
     }
 
     void timerEvent(QTimerEvent *) Q_DECL_OVERRIDE
     {
-        incubateFor(m_incubationTime);
+        int incubationTime = qMax(0, m_hmd->timeUntilNextFrame()-6); // present ~6ms before scanout
+        qDebug() << "Incubating for" << incubationTime;
+        if(incubationTime > 0)
+            incubateFor(incubationTime);
     }
 
 private:
-    const int m_incubationTime;
+    //const int m_incubationTime;
+    QHeadMountedDisplay *m_hmd;
 };
 
 } // anonymous
@@ -68,7 +73,6 @@ QHeadMountedDisplay::QHeadMountedDisplay(int hmdId, const QHeadMountedDisplayFor
     , m_rootItem(nullptr)
 {
     //Note: m_apibackend is not yet initialized here. Wait for openGLContext creation
-    //QSurface::setSurfaceType(QSurface::OpenGLSurface);
 
     QSurfaceFormat format;
     // Qt Quick may need a depth and stencil buffer. Always make sure these are available.
@@ -180,6 +184,11 @@ QSize QHeadMountedDisplay::renderTargetSize() const
     return m_apibackend->getRenderTargetSize();
 }
 
+int QHeadMountedDisplay::timeUntilNextFrame()
+{
+    return m_apibackend->timeUntilNextFrame();
+}
+
 QOpenGLContext *QHeadMountedDisplay::context()
 {
     return m_context;
@@ -256,13 +265,13 @@ void QHeadMountedDisplay::run() {
     if(m_rootItem)
         vrCamera = m_rootItem->findChild<QVRCamera *>();
     m_apibackend->bindFrambufferObject();
+    //static_cast<Qt3DRender::QRenderAspectPrivate*>(Qt3DRender::QRenderAspectPrivate::get(m_renderAspect))->jobManager()->waitForAllJobs();
+    static_cast<Qt3DRender::QRenderAspectPrivate*>(Qt3DRender::QRenderAspectPrivate::get(m_renderAspect))->renderSynchronous();
     QMatrix4x4 leftEye;
     QMatrix4x4 rightEye;
     m_apibackend->getEyeMatrices(leftEye, rightEye);
     if(vrCamera != nullptr)
         vrCamera->update(leftEye, rightEye);
-    static_cast<Qt3DRender::QRenderAspectPrivate*>(Qt3DRender::QRenderAspectPrivate::get(m_renderAspect))->jobManager()->waitForAllJobs();
-    static_cast<Qt3DRender::QRenderAspectPrivate*>(Qt3DRender::QRenderAspectPrivate::get(m_renderAspect))->renderSynchronous();
     m_fbo->bindDefault();
     m_apibackend->swapToHeadset();
     emit requestRun();

@@ -61,6 +61,7 @@ public:
     QObject* surface() const;
     QSize renderTargetSize() const;
 
+    int timeUntilNextFrame();
     QOpenGLContext *context();
 signals:
     void requestRun();

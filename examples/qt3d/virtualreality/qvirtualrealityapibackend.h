@@ -27,6 +27,7 @@ public:
     //TO DO: introduce getRecomendedSize()
     virtual QSize getRenderTargetSize() = 0;
 
+    virtual int timeUntilNextFrame() = 0;
     virtual void swapToHeadset() = 0;
 
     virtual void getEyeMatrices(QMatrix4x4 &leftEye, QMatrix4x4 &rightEye) = 0;

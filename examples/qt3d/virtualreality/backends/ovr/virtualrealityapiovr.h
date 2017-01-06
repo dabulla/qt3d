@@ -22,6 +22,8 @@ public:
     QMatrix4x4 headPose(int hmdId);
     QSize getRenderTargetSize();
 
+    int timeUntilNextFrame();
+
     void swapToHeadset();
 
     void getEyeMatrices(QMatrix4x4 &leftEye, QMatrix4x4 &rightEye);
