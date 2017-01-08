@@ -19,7 +19,7 @@
 #include <Qt3DRender/QRenderAspect>
 #include <Qt3DRender/private/qrenderaspect_p.h>
 #include <Qt3DCore/private/qabstractaspectjobmanager_p.h>
-#include "qvrcamera.h"
+#include "frontend/qvirtualrealitycamera.h"
 
 #include <QOpenGLDebugLogger>
 
@@ -145,7 +145,7 @@ void QHeadMountedDisplay::setSource(const QUrl &source)
                 this, &QHeadMountedDisplay::onSceneCreated);
 
 
-        qmlRegisterType<QVRCamera>("vr", 2, 0, "VrCamera");
+        qmlRegisterType<QVirtualrealityCamera>("vr", 2, 0, "VrCamera");
         m_engine->setSource(m_source);
 
         // Set the QQmlIncubationController on the window
@@ -214,7 +214,7 @@ void QHeadMountedDisplay::onSceneCreated(QObject *rootObject)
 //    }
 
     if(m_rootItem) {
-        QVRCamera *vrCamera = m_rootItem->findChild<QVRCamera *>();
+        QVirtualrealityCamera *vrCamera = m_rootItem->findChild<QVirtualrealityCamera *>();
         if(vrCamera) {
             QMatrix4x4 projL;
             QMatrix4x4 projR;
@@ -261,9 +261,9 @@ void QHeadMountedDisplay::run() {
 //        if (m_aspectEngine->rootEntity() != m_item->entity())
 //            scheduleRootEntityChange();
     //TODO: QVrSelector. This is the object with all parameters then
-    QVRCamera *vrCamera(nullptr);
+    QVirtualrealityCamera *vrCamera(nullptr);
     if(m_rootItem)
-        vrCamera = m_rootItem->findChild<QVRCamera *>();
+        vrCamera = m_rootItem->findChild<QVirtualrealityCamera *>();
     m_apibackend->bindFrambufferObject();
     //static_cast<Qt3DRender::QRenderAspectPrivate*>(Qt3DRender::QRenderAspectPrivate::get(m_renderAspect))->jobManager()->waitForAllJobs();
     static_cast<Qt3DRender::QRenderAspectPrivate*>(Qt3DRender::QRenderAspectPrivate::get(m_renderAspect))->renderSynchronous();

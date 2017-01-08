@@ -16,7 +16,7 @@ public:
 
     void initialize();
     void shutdown();
-    bool bindFrambufferObject();
+    bool bindFrambufferObject(int hmdId);
 
     qreal refreshRate(int hmdId) const;
     QMatrix4x4 headPose(int hmdId);
@@ -29,6 +29,15 @@ public:
     void getEyeMatrices(QMatrix4x4 &leftEye, QMatrix4x4 &rightEye);
 
     void getProjectionMatrices(QMatrix4x4 &leftProjection, QMatrix4x4 &rightProjection);
+
+    int numberOfTrackedObjects();
+    void getTrackedObject(QMatrix4x4 &transform);
+    int getTrackedObjectType();
+    void getTrackedObjectVertices(QVector<float> &vertices);
+    void getTrackedObjectTexture(QOpenGLTexture *texture);
+
+    void getMirrorTexture(QOpenGLTexture *outMirrorTexture);
+
 private:
     bool m_sessionStarted;
     ovrSession m_session;

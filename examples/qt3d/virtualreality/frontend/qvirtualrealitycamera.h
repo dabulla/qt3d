@@ -5,7 +5,11 @@
 #include <Qt3DCore/QTransform>
 #include <Qt3DRender/QCameraLens>
 
-class QVRCamera : public Qt3DCore::QEntity
+QT_BEGIN_NAMESPACE
+
+namespace Qt3DVirtualReality {
+
+class QVirtualrealityCamera : public Qt3DCore::QEntity
 {
     Q_OBJECT
     Q_PROPERTY(Qt3DCore::QEntity * leftCamera READ leftCamera NOTIFY leftCameraChanged)
@@ -20,7 +24,7 @@ class QVRCamera : public Qt3DCore::QEntity
     Q_PROPERTY(QRectF leftNormalizedViewportRect READ leftNormalizedViewportRect WRITE setLeftNormalizedViewportRect NOTIFY leftNormalizedViewportRectChanged)
     Q_PROPERTY(QRectF rightNormalizedViewportRect READ rightNormalizedViewportRect WRITE setRightNormalizedViewportRect NOTIFY rightNormalizedViewportRectChanged)
 public:
-    QVRCamera(QNode *parent = nullptr);
+    QVirtualrealityCamera(QNode *parent = nullptr);
 
     Qt3DCore::QEntity * leftCamera();
     Qt3DCore::QEntity * rightCamera();
@@ -76,4 +80,9 @@ private:
     QRectF m_rightNormalizedViewportRect;
     QQuaternion m_offsetOrientation;
 };
+
+} // namespace Qt3DVirtualReality
+
+QT_END_NAMESPACE
+
 #endif

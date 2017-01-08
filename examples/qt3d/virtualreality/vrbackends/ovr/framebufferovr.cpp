@@ -1,16 +1,16 @@
-#include "qvrrendertarget.h"
+#include "framebufferovr.h"
 #include <QOpenGLFunctions_3_2_Core>
 #include <QOpenGLFramebufferObject>
 #include <QDebug>
 
-class OvrFramebuffer
+class FramebufferOvr
 {
     GLuint m_colorAttachment;
     GLuint m_depthBuffer;
     GLuint m_framebuffer;
     QOpenGLFunctions_3_2_Core *m_funcs;
 public:
-    OvrFramebuffer(GLuint colorAttachment0TextureId, GLuint depthBufferRenderbufferId, QOpenGLFunctions_3_2_Core *funcs)
+    FramebufferOvr(GLuint colorAttachment0TextureId, GLuint depthBufferRenderbufferId, QOpenGLFunctions_3_2_Core *funcs)
         : m_colorAttachment(colorAttachment0TextureId)
         , m_depthBuffer(depthBufferRenderbufferId)
         , m_funcs(funcs)
@@ -35,7 +35,7 @@ public:
 
         m_funcs->glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
-    ~OvrFramebuffer() {
+    ~FramebufferOvr() {
 
     }
 
@@ -93,7 +93,7 @@ OvrSwapChain::OvrSwapChain( ovrSession session, QSize size)
         {
             GLuint chainTextureId;
             ovr_GetTextureSwapChainBufferGL(m_session, m_textureChain, i, &chainTextureId);
-            m_framebuffers.push_back(new OvrFramebuffer(chainTextureId, depthBufferId, m_funcs));
+            m_framebuffers.push_back(new FramebufferOvr(chainTextureId, depthBufferId, m_funcs));
         }
     }
 
@@ -112,7 +112,7 @@ OvrSwapChain::~OvrSwapChain()
         ovr_DestroyTextureSwapChain(m_session, m_textureChain);
         m_textureChain = nullptr;
     }
-    for(QVector<OvrFramebuffer *>::iterator iter(m_framebuffers.begin()) ; iter != m_framebuffers.end() ; ++iter) {
+    for(QVector<FramebufferOvr *>::iterator iter(m_framebuffers.begin()) ; iter != m_framebuffers.end() ; ++iter) {
         delete *iter;
     }
 }

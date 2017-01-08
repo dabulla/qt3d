@@ -17,23 +17,28 @@ DEFINES += QT_NO_FOREACH
 CONFIG += c++11
 
 SOURCES += \
-    backends/ovr/virtualrealityapiovr.cpp \
-    backends/ovr/qvrrendertarget.cpp \
-    backends/openvr/virtualrealityapiopenvr.cpp \
+    vrbackends/ovr/virtualrealityapiovr.cpp \
+    vrbackends/ovr/framebufferovr.cpp \
+    vrbackends/openvr/virtualrealityapiopenvr.cpp \
     qvirtualrealityapi.cpp \
     qheadmounteddisplay.cpp \
-    qvrcamera.cpp
+    frontend/qvirtualrealityaspect.cpp \
+    frontend/qvirtualrealitycamera.cpp \
+    frontend/qvirtualrealitymesh.cpp
 
 HEADERS += \
-    backends/ovr/virtualrealityapiovr.h \
-    backends/ovr/qvrrendertarget.h \
-    backends/openvr/virtualrealityapiopenvr.h \
+    vrbackends/ovr/virtualrealityapiovr.h \
+    vrbackends/ovr/framebufferovr.h \
+    vrbackends/openvr/virtualrealityapiopenvr.h \
     qvirtualrealityapi.h \
     qvirtualrealityapi_p.h \
     qvirtualrealityapibackend.h \
     qheadmounteddisplay.h \
     qt3dvr_global.h \
-    qvrcamera.h
+    frontend/qvirtualrealityaspect.h \
+    frontend/qvirtualrealityaspect_p.h \
+    frontend/qvirtualrealitycamera.h \
+    frontend/qvirtualrealitymesh.h
 
 target.path = $$[QT_INSTALL_EXAMPLES]/qt3d/$$TARGET
 INSTALLS += target

@@ -1,7 +1,11 @@
-#include "qvrcamera.h"
+#include "qvirtualrealitycamera.h"
 #include <Qt3DCore/QTransform>
 
-QVRCamera::QVRCamera(QNode *parent)
+QT_BEGIN_NAMESPACE
+
+namespace Qt3DVirtualReality {
+
+QVirtualrealityCamera::QVirtualrealityCamera(QNode *parent)
     :m_leftCamera(new Qt3DCore::QEntity(parent)),
      m_rightCamera(new Qt3DCore::QEntity(parent)), // TODO: Delete?
      m_leftCameraLens(new Qt3DRender::QCameraLens(parent)),//m_leftCamera)),
@@ -29,23 +33,23 @@ QVRCamera::QVRCamera(QNode *parent)
     Q_EMIT rightCameraChanged(m_rightCamera);
 }
 
-Qt3DCore::QEntity *QVRCamera::leftCamera()
+Qt3DCore::QEntity *QVirtualrealityCamera::leftCamera()
 {
     return m_leftCamera;
 }
 
-Qt3DCore::QEntity *QVRCamera::rightCamera()
+Qt3DCore::QEntity *QVirtualrealityCamera::rightCamera()
 {
     return m_rightCamera;
 }
 
-void QVRCamera::setProjections(const QMatrix4x4 &leftProjection, const QMatrix4x4 &rightProjection)
+void QVirtualrealityCamera::setProjections(const QMatrix4x4 &leftProjection, const QMatrix4x4 &rightProjection)
 {
     m_leftCameraLens->setProjectionMatrix(leftProjection);
     m_rightCameraLens->setProjectionMatrix(rightProjection);
 }
 
-void QVRCamera::update(const QMatrix4x4 &viewLeft, const QMatrix4x4 &viewRight)
+void QVirtualrealityCamera::update(const QMatrix4x4 &viewLeft, const QMatrix4x4 &viewRight)
 {
 //    Vector3f finalUp      = rot.Transform(Vector3f(0, 1, 0));
 //    Vector3f finalForward = rot.Transform(Vector3f(0, 0, -1));
@@ -76,52 +80,52 @@ void QVRCamera::update(const QMatrix4x4 &viewLeft, const QMatrix4x4 &viewRight)
 //    m_rightTransform->setTranslation(-rightPos);
 }
 
-float QVRCamera::disparity() const
+float QVirtualrealityCamera::disparity() const
 {
     return m_disparity;
 }
 
-//QMatrix4x4 QVRCamera::headPosPredicted() const
+//QMatrix4x4 QVirtualrealityCamera::headPosPredicted() const
 //{
 //    return m_headPosPredicted;
 //}
 
-//QMatrix4x4 QVRCamera::headOrientationPredicted() const
+//QMatrix4x4 QVirtualrealityCamera::headOrientationPredicted() const
 //{
 //    return m_headOrientationPredicted;
 //}
 
-QVector3D QVRCamera::offset() const
+QVector3D QVirtualrealityCamera::offset() const
 {
     return m_offset;
 }
 
-//QMatrix4x4 QVRCamera::viewMatrixPredicted() const
+//QMatrix4x4 QVirtualrealityCamera::viewMatrixPredicted() const
 //{
 //    return m_viewMatrixPredicted;
 //}
 
-float QVRCamera::playerHeight() const
+float QVirtualrealityCamera::playerHeight() const
 {
     return m_playerHeight;
 }
 
-QRectF QVRCamera::leftNormalizedViewportRect() const
+QRectF QVirtualrealityCamera::leftNormalizedViewportRect() const
 {
     return m_leftNormalizedViewportRect;
 }
 
-QRectF QVRCamera::rightNormalizedViewportRect() const
+QRectF QVirtualrealityCamera::rightNormalizedViewportRect() const
 {
     return m_rightNormalizedViewportRect;
 }
 
-QQuaternion QVRCamera::offsetOrientation() const
+QQuaternion QVirtualrealityCamera::offsetOrientation() const
 {
     return m_offsetOrientation;
 }
 
-void QVRCamera::setOffset(QVector3D offset)
+void QVirtualrealityCamera::setOffset(QVector3D offset)
 {
     if (m_offset == offset)
         return;
@@ -130,7 +134,7 @@ void QVRCamera::setOffset(QVector3D offset)
     Q_EMIT offsetChanged(offset);
 }
 
-void QVRCamera::setLeftNormalizedViewportRect(QRectF leftNormalizedViewportRect)
+void QVirtualrealityCamera::setLeftNormalizedViewportRect(QRectF leftNormalizedViewportRect)
 {
     if (m_leftNormalizedViewportRect == leftNormalizedViewportRect)
         return;
@@ -139,7 +143,7 @@ void QVRCamera::setLeftNormalizedViewportRect(QRectF leftNormalizedViewportRect)
     Q_EMIT leftNormalizedViewportRectChanged(leftNormalizedViewportRect);
 }
 
-void QVRCamera::setRightNormalizedViewportRect(QRectF rightNormalizedViewportRect)
+void QVirtualrealityCamera::setRightNormalizedViewportRect(QRectF rightNormalizedViewportRect)
 {
     if (m_rightNormalizedViewportRect == rightNormalizedViewportRect)
         return;
@@ -148,7 +152,7 @@ void QVRCamera::setRightNormalizedViewportRect(QRectF rightNormalizedViewportRec
     Q_EMIT rightNormalizedViewportRectChanged(rightNormalizedViewportRect);
 }
 
-void QVRCamera::setOffsetOrientation(QQuaternion offsetOrientation)
+void QVirtualrealityCamera::setOffsetOrientation(QQuaternion offsetOrientation)
 {
     if (m_offsetOrientation == offsetOrientation)
         return;
@@ -156,3 +160,7 @@ void QVRCamera::setOffsetOrientation(QQuaternion offsetOrientation)
     m_offsetOrientation = offsetOrientation;
     Q_EMIT offsetOrientationChanged(offsetOrientation);
 }
+
+} // namespace Qt3DVirtualReality
+
+QT_END_NAMESPACE

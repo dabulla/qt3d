@@ -1,11 +1,16 @@
 #include "virtualrealityapiovr.h"
+#include "framebufferovr.h"
 
 #include "Extras/OVR_Math.h"
 #include "OVR_CAPI_GL.h"
 
-#include "qvrrendertarget.h"
-
 using namespace OVR;
+
+#if defined(_WIN32)
+    #include <dxgi.h> // for GetDefaultAdapterLuid
+    //#pragma comment(lib, "dxgi.lib")
+#endif
+
 
 static ovrGraphicsLuid GetDefaultAdapterLuid()
 {
@@ -100,7 +105,7 @@ void VirtualRealityApiOvr::shutdown()
         delete m_swapChain;
 }
 
-bool VirtualRealityApiOvr::bindFrambufferObject()
+bool VirtualRealityApiOvr::bindFrambufferObject(int hmdId)
 {
     m_swapChain->bindCurrentChainIndexFramebuffer();
     return true;
@@ -189,9 +194,20 @@ void VirtualRealityApiOvr::getProjectionMatrices(QMatrix4x4 &leftProjection, QMa
     //TODO: don't copy
 }
 
+int VirtualRealityApiOvr::numberOfTrackedObjects()
+{
+    //TODO: does this work?
+    return ovr_GetTrackerCount(m_session);
+}
+
+void VirtualRealityApiOvr::getMirrorTexture(QOpenGLTexture *outMirrorTexture)
+{
+
+}
+
 qreal VirtualRealityApiOvr::refreshRate(int hmdId) const
 {
-    return 90; //TODO
+    return m_hmdDesc.DisplayRefreshRate;
 }
 
 QMatrix4x4 VirtualRealityApiOvr::headPose(int hmdId)

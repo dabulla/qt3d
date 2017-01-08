@@ -12,13 +12,13 @@
 #define QT3DVR_COMPILE_WITH_OSVR false
 
 #if(QT3DVR_COMPILE_WITH_OVR)
-#  include "backends/ovr/virtualrealityapiovr.h"
+#  include "vrbackends/ovr/virtualrealityapiovr.h"
 #endif
 #if(QT3DVR_COMPILE_WITH_OPENVR)
-#  include "backends/openvr/virtualrealityapiopenvr.h"
+#  include "vrbackends/openvr/virtualrealityapiopenvr.h"
 #endif
 #if(QT3DVR_COMPILE_WITH_OSVR)
-#  include "backends/osvr/vrapiosvr.h"
+#  include "vrbackends/osvr/vrapiosvr.h"
 #endif
 
 QT_BEGIN_NAMESPACE

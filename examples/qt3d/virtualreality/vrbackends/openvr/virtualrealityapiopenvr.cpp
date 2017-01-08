@@ -231,7 +231,7 @@ void VirtualRealityApiOpenVR::processVrEvent( const vr::VREvent_t & event )
     }
 }
 
-bool VirtualRealityApiOpenVR::bindFrambufferObject()
+bool VirtualRealityApiOpenVR::bindFrambufferObject(int hmdId)
 {
     return m_fbo->bind();
 }
@@ -284,4 +284,9 @@ void VirtualRealityApiOpenVR::getProjectionMatrices(QMatrix4x4 &leftProjection, 
 {
     leftProjection = getHmdMatrixProjectionEye( vr::Eye_Left );
     rightProjection = getHmdMatrixProjectionEye( vr::Eye_Right );
+}
+
+void VirtualRealityApiOpenVR::getMirrorTexture(QOpenGLTexture *outMirrorTexture)
+{
+
 }
