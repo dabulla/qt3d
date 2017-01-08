@@ -286,6 +286,31 @@ void VirtualRealityApiOpenVR::getProjectionMatrices(QMatrix4x4 &leftProjection, 
     rightProjection = getHmdMatrixProjectionEye( vr::Eye_Right );
 }
 
+int VirtualRealityApiOpenVR::numberOfTrackedObjects()
+{
+    return 1;
+}
+
+void VirtualRealityApiOpenVR::getTrackedObject(int id, QMatrix4x4 &transform)
+{
+
+}
+
+Qt3DVirtualReality::QVirtualRealityApiBackend::TrackedObjectType VirtualRealityApiOpenVR::getTrackedObjectType(int id)
+{
+    return Qt3DVirtualReality::QVirtualRealityApiBackend::Other;
+}
+
+void VirtualRealityApiOpenVR::getTrackedObjectVertices(int id, QVector<float> &vertices)
+{
+
+}
+
+void VirtualRealityApiOpenVR::getTrackedObjectTexture(int id, QOpenGLTexture *texture)
+{
+
+}
+
 void VirtualRealityApiOpenVR::getMirrorTexture(QOpenGLTexture *outMirrorTexture)
 {
 

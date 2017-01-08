@@ -200,6 +200,26 @@ int VirtualRealityApiOvr::numberOfTrackedObjects()
     return ovr_GetTrackerCount(m_session);
 }
 
+void VirtualRealityApiOvr::getTrackedObject(int id, QMatrix4x4 &transform)
+{
+
+}
+
+Qt3DVirtualReality::QVirtualRealityApiBackend::TrackedObjectType VirtualRealityApiOvr::getTrackedObjectType(int id)
+{
+    return Qt3DVirtualReality::QVirtualRealityApiBackend::Other;
+}
+
+void VirtualRealityApiOvr::getTrackedObjectVertices(int id, QVector<float> &vertices)
+{
+
+}
+
+void VirtualRealityApiOvr::getTrackedObjectTexture(int id, QOpenGLTexture *texture)
+{
+
+}
+
 void VirtualRealityApiOvr::getMirrorTexture(QOpenGLTexture *outMirrorTexture)
 {
 

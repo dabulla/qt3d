@@ -264,7 +264,7 @@ void QHeadMountedDisplay::run() {
     QVirtualrealityCamera *vrCamera(nullptr);
     if(m_rootItem)
         vrCamera = m_rootItem->findChild<QVirtualrealityCamera *>();
-    m_apibackend->bindFrambufferObject();
+    m_apibackend->bindFrambufferObject(m_hmdId);
     //static_cast<Qt3DRender::QRenderAspectPrivate*>(Qt3DRender::QRenderAspectPrivate::get(m_renderAspect))->jobManager()->waitForAllJobs();
     static_cast<Qt3DRender::QRenderAspectPrivate*>(Qt3DRender::QRenderAspectPrivate::get(m_renderAspect))->renderSynchronous();
     QMatrix4x4 leftEye;
