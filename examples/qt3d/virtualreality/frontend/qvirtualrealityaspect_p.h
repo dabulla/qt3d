@@ -3,11 +3,16 @@
 
 #include "qvirtualrealityaspect.h"
 #include <Qt3DCore/private/qabstractaspect_p.h>
-//#include <QtCore/qsharedpointer.h>
+#include <QtCore/qsharedpointer.h>
+#include "querytrackedobjectsjob_p.h"
 
 QT_BEGIN_NAMESPACE
 
 namespace Qt3DVirtualReality {
+
+class QHeadMountedDisplay;
+class QVirtualRealityApi;
+class QVirtualRealityApiBackend;
 
 class QVirtualRealityAspectPrivate : public Qt3DCore::QAbstractAspectPrivate
 {
@@ -20,13 +25,16 @@ class QVirtualRealityAspectPrivate : public Qt3DCore::QAbstractAspectPrivate
 
     qint64 m_time;
     bool m_initialized;
-//    QScopedPointer<Logic::Manager> m_manager;
-//    QScopedPointer<Logic::Executor> m_executor;
-//    QSharedPointer<Logic::CallbackJob> m_callbackJob;
+    QSharedPointer<QueryTrackedObjectsJob> m_queryTrackedObjectsJob;
+
+
+    QHeadMountedDisplay *m_hmd;
+    //QVirtualRealityApi *m_api;
+    QVirtualRealityApiBackend *m_apibackend;
 };
 
 } // namespace Qt3DLogic
 
 QT_END_NAMESPACE
 
-#endif // QT3DLOGIC_QLOGICASPECT_P_H
+#endif // QT3DVIRTUALREALITY_QVIRTUALREALITYASPECT_P_H

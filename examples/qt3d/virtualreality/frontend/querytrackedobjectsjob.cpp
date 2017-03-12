@@ -37,78 +37,41 @@
 **
 ****************************************************************************/
 
-#ifndef QT3DLOGIC_LOGIC_HANDLER_H
-#define QT3DLOGIC_LOGIC_HANDLER_H
+#include "querytrackedobjectsjob_p.h"
 
-//
-//  W A R N I N G
-//  -------------
-//
-// This file is not part of the Qt API.  It exists for the convenience
-// of other Qt classes.  This header file may change from version to
-// version without notice, or even be removed.
-//
-// We mean it.
-//
+#include <Qt3DCore/private/qaspectjob_p.h>
 
-#include <Qt3DCore/qbackendnode.h>
-#include <Qt3DCore/qnodeid.h>
-#include <Qt3DCore/qaspectjob.h>
-#include <Qt3DCore/private/qresourcemanager_p.h>
+#include <QDebug> //TODODBG
 
 QT_BEGIN_NAMESPACE
 
-namespace Qt3DLogic {
-namespace Logic {
+namespace Qt3DVirtualReality {
 
-class Handler;
+namespace JobTypes {
 
-//TO DO: put in file
+    enum JobType {
+        QueryTrackedObjects = 16384
+    };
 
-class HandlerManager : public Qt3DCore::QResourceManager<
-        Handler,
-        Qt3DCore::QNodeId,
-        16,
-        Qt3DCore::ArrayAllocatingPolicy>
+} // JobTypes
+
+QueryTrackedObjectsJob::QueryTrackedObjectsJob()
+    : QAspectJob()
+    , m_apibackend(nullptr)
 {
-public:
-    HandlerManager() {}
-};
+    SET_JOB_RUN_STAT_TYPE(this, JobTypes::QueryTrackedObjects, 0);
+}
 
-class Handler : public Qt3DCore::QBackendNode
+void QueryTrackedObjectsJob::setVirtualRealityApiBackend(QVirtualRealityApiBackend *apibackend)
 {
-public:
-    Handler();
+    m_apibackend = apibackend;
+}
 
-    void setManager(HandlerManager *manager) { m_logicManager = manager; }
-    HandlerManager *logicManager() const { return m_logicManager; }
-
-protected:
-    void sceneChangeEvent(const Qt3DCore::QSceneChangePtr &e) Q_DECL_OVERRIDE;
-
-private:
-    void initializeFromPeer(const Qt3DCore::QNodeCreatedChangeBasePtr &change) Q_DECL_FINAL;
-
-    HandlerManager *m_logicManager;
-};
-
-
-class HandlerFunctor : public Qt3DCore::QBackendNodeMapper
+void QueryTrackedObjectsJob::run()
 {
-public:
-    explicit HandlerFunctor(HandlerManager *handler);
+    qDebug() << "TODO:DBG:Running query object tracked vr!";
+}
 
-    Qt3DCore::QBackendNode *create(const Qt3DCore::QNodeCreatedChangeBasePtr &change) const Q_DECL_OVERRIDE;
-    Qt3DCore::QBackendNode *get(Qt3DCore::QNodeId id) const Q_DECL_OVERRIDE;
-    void destroy(Qt3DCore::QNodeId id) const Q_DECL_OVERRIDE;
-
-private:
-    HandlerManager *m_manager;
-};
-
-} // namespace Logic
-} // namespace Qt3DLogic
+} // namespace Qt3DVirtualReality
 
 QT_END_NAMESPACE
-
-#endif // QT3DLOGIC_LOGIC_HANDLER_H

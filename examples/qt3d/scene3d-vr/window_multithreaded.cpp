@@ -194,7 +194,7 @@ void QuickRenderer::ensureFbo()
         format.setSamples(0);
         format.setMipmap(false);
 
-        m_fbo = new QOpenGLFramebufferObject(texSize, format, m_vrRenderer->getTexId() );
+        m_fbo = new QOpenGLFramebufferObject(texSize, format);//, m_vrRenderer->getTexId() );
         m_quickWindow->setRenderTarget(m_fbo);
     }
     if(!sizeOkay)

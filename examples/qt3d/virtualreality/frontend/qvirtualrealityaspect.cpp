@@ -1,9 +1,32 @@
 #include "qvirtualrealityaspect.h"
 #include "qvirtualrealityaspect_p.h"
+#include "querytrackedobjectsjob_p.h"
 
 using namespace Qt3DCore;
 
 namespace Qt3DVirtualReality {
+
+QVirtualRealityAspectPrivate::QVirtualRealityAspectPrivate()
+    : QAbstractAspectPrivate()
+    , m_time(0)
+    , m_initialized(false)
+    , m_queryTrackedObjectsJob(new Qt3DVirtualReality::QueryTrackedObjectsJob)
+    , m_hmd(nullptr)
+    , m_apibackend(nullptr)
+{
+}
+
+void QVirtualRealityAspectPrivate::onEngineAboutToShutdown()
+{
+
+}
+
+void QVirtualRealityAspectPrivate::registerBackendTypes()
+{
+    Q_Q(QVirtualRealityAspect);
+    //q->registerBackendType<QQueryTrackedObjectsJob>();
+    //q->registerBackendType<QVirtualRealityTrackedObjectInstantiator>();
+}
 
 /*!
   Constructs a new QVirtualRealityAspect instance with \a parent.
@@ -11,19 +34,37 @@ namespace Qt3DVirtualReality {
 QVirtualRealityAspect::QVirtualRealityAspect(QObject *parent)
     : QVirtualRealityAspect(*new QVirtualRealityAspectPrivate(), parent) {}
 
-QVirtualRealityAspect::~QVirtualRealityAspect()
+QVirtualRealityAspect::QVirtualRealityAspect(QVirtualRealityAspectPrivate &dd, QObject *parent)
+    : QAbstractAspect(dd, parent)
 {
-
+    Q_D(QVirtualRealityAspect);
+    setObjectName(QStringLiteral("Virtual Reality Aspect"));
+    d->registerBackendTypes();
 }
 
-QVariant QVirtualRealityAspect::executeCommand(const QStringList &args)
+QVirtualRealityAspect::~QVirtualRealityAspect()
 {
-    return QVariant();
+}
+
+void QVirtualRealityAspect::setHeadmountedDisplay(QHeadMountedDisplay *hmd)
+{
+    Q_D(QVirtualRealityAspect);
+    d->m_hmd = hmd;
+}
+
+void QVirtualRealityAspect::setVirtualRealityApiBackend(QVirtualRealityApiBackend *apiBackend)
+{
+    Q_D(QVirtualRealityAspect);
+    d->m_apibackend = apiBackend;
+    d->m_queryTrackedObjectsJob->setVirtualRealityApiBackend(d->m_apibackend);
 }
 
 QVector<Qt3DCore::QAspectJobPtr> QVirtualRealityAspect::jobsToExecute(qint64 time)
 {
-    return QVector<Qt3DCore::QAspectJobPtr>();
+    Q_D(QVirtualRealityAspect);
+    QVector<Qt3DCore::QAspectJobPtr> jobs;
+    jobs.append(d->m_queryTrackedObjectsJob);
+    return jobs;
 }
 
 void QVirtualRealityAspect::onRegistered()
@@ -34,27 +75,16 @@ void QVirtualRealityAspect::onUnregistered()
 {
 }
 
-QVirtualRealityAspect::QVirtualRealityAspect(QVirtualRealityAspectPrivate &dd, QObject *parent)
-    : QAbstractAspect(dd, parent)
+///*! \internal */
+//void QVirtualRealityAspect::onEngineStartup()
+//{
+//    Q_D(QLogicAspect);
+//    d->m_executor->setScene(d->m_arbiter->scene());
+//}
+
+QVariant QVirtualRealityAspect::executeCommand(const QStringList &args)
 {
-
-}
-
-void QVirtualRealityAspectPrivate::registerBackendTypes()
-{
-    Q_Q(QVirtualRealityAspect);
-    //q->registerBackendType<QQueryTrackedObjectsJob>();
-
-}
-
-Qt3DVirtualReality::QVirtualRealityAspectPrivate::QVirtualRealityAspectPrivate()
-{
-
-}
-
-void QVirtualRealityAspectPrivate::onEngineAboutToShutdown()
-{
-
+    return QVariant();
 }
 
 } // namespace Qt3DVirtualReality

@@ -24,7 +24,13 @@ SOURCES += \
     qheadmounteddisplay.cpp \
     frontend/qvirtualrealityaspect.cpp \
     frontend/qvirtualrealitycamera.cpp \
-    frontend/qvirtualrealitymesh.cpp
+    frontend/qvirtualrealitymesh.cpp \
+    frontend/querytrackedobjectsjob.cpp \
+    qvirtualrealitygeometry.cpp \
+    qvirtualrealitymesh.cpp \
+    handler.cpp \
+    frontend/qtrackedtransform.cpp \
+    trackedtransform.cpp
 
 HEADERS += \
     vrbackends/ovr/virtualrealityapiovr.h \
@@ -38,7 +44,14 @@ HEADERS += \
     frontend/qvirtualrealityaspect.h \
     frontend/qvirtualrealityaspect_p.h \
     frontend/qvirtualrealitycamera.h \
-    frontend/qvirtualrealitymesh.h
+    frontend/qvirtualrealitymesh.h \
+    frontend/querytrackedobjectsjob_p.h \
+    qvirtualrealitygeometry.h \
+    qvirtualrealitygeometry_p.h \
+    qvirtualrealitymesh.h \
+    handler_p.h \
+    frontend/qtrackedtransform.h \
+    trackedtransform_p.h
 
 target.path = $$[QT_INSTALL_EXAMPLES]/qt3d/$$TARGET
 INSTALLS += target

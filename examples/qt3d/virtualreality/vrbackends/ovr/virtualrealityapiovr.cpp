@@ -156,7 +156,7 @@ void VirtualRealityApiOvr::getEyeMatrices(QMatrix4x4 &leftEye, QMatrix4x4 &right
                                                  eyeRenderDesc[1].HmdToEyeOffset };
 
 
-    ovr_GetEyePoses(m_session, m_frameIndex+3, ovrTrue, HmdToEyeOffset, m_eyeRenderPose, &m_sensorSampleTime);
+    ovr_GetEyePoses(m_session, m_frameIndex, ovrTrue, HmdToEyeOffset, m_eyeRenderPose, &m_sensorSampleTime);
 
     ovrVector3f &posLeft = m_eyeRenderPose[ovrEye_Left].Position;
     ovrVector3f &posRight = m_eyeRenderPose[ovrEye_Right].Position;

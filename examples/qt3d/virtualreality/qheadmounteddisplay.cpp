@@ -62,6 +62,7 @@ QHeadMountedDisplay::QHeadMountedDisplay(int hmdId, const QHeadMountedDisplayFor
     , m_renderAspect(nullptr)
     , m_inputAspect(nullptr)
     , m_logicAspect(nullptr)
+    , m_virtualRealityAspect(nullptr)
     , m_initialized(false)
     , m_incubationController(nullptr)
     , m_api(api)
@@ -109,10 +110,15 @@ QHeadMountedDisplay::QHeadMountedDisplay(int hmdId, const QHeadMountedDisplayFor
     m_renderAspect = new Qt3DRender::QRenderAspect(Qt3DRender::QRenderAspect::Synchronous);
     m_inputAspect = new Qt3DInput::QInputAspect;
     m_logicAspect = new Qt3DLogic::QLogicAspect;
+    m_virtualRealityAspect = new Qt3DVirtualReality::QVirtualRealityAspect;
+    m_virtualRealityAspect->setHeadmountedDisplay(this);
+    //m_virtualRealityAspect->setVirtualRealityApi(m_api);
+    m_virtualRealityAspect->setVirtualRealityApiBackend(m_apibackend);
 
     m_engine->aspectEngine()->registerAspect(m_renderAspect);
     m_engine->aspectEngine()->registerAspect(m_inputAspect);
     m_engine->aspectEngine()->registerAspect(m_logicAspect);
+    m_engine->aspectEngine()->registerAspect(m_virtualRealityAspect);
     connect(this, &QHeadMountedDisplay::requestRun, this, &QHeadMountedDisplay::run, Qt::QueuedConnection);
 }
 

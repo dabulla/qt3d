@@ -37,8 +37,8 @@
 **
 ****************************************************************************/
 
-#ifndef QT3DLOGIC_LOGIC_HANDLER_H
-#define QT3DLOGIC_LOGIC_HANDLER_H
+#ifndef QT3DEXTRAS_QVIRTUALREALITYGEOMETRY_P_H
+#define QT3DEXTRAS_QVIRTUALREALITYGEOMETRY_P_H
 
 //
 //  W A R N I N G
@@ -51,64 +51,47 @@
 // We mean it.
 //
 
-#include <Qt3DCore/qbackendnode.h>
-#include <Qt3DCore/qnodeid.h>
-#include <Qt3DCore/qaspectjob.h>
-#include <Qt3DCore/private/qresourcemanager_p.h>
+#include <Qt3DRender/private/qgeometry_p.h>
 
 QT_BEGIN_NAMESPACE
 
-namespace Qt3DLogic {
-namespace Logic {
+namespace Qt3DRender {
 
-class Handler;
+class QAttribute;
+class QBuffer;
 
-//TO DO: put in file
+} // namespace Qt3DRender
 
-class HandlerManager : public Qt3DCore::QResourceManager<
-        Handler,
-        Qt3DCore::QNodeId,
-        16,
-        Qt3DCore::ArrayAllocatingPolicy>
+namespace Qt3DExtras {
+
+class QVirtualrealityGeometryPrivate : public Qt3DRender::QGeometryPrivate
 {
 public:
-    HandlerManager() {}
+    QVirtualrealityGeometryPrivate();
+
+    void init();
+
+    Q_DECLARE_PUBLIC(QVirtualrealityGeometry)
+
+    bool m_hasTopEndcap;
+    bool m_hasBottomEndcap;
+    int m_rings;
+    int m_slices;
+    float m_topRadius;
+    float m_bottomRadius;
+    float m_length;
+    Qt3DRender::QAttribute *m_positionAttribute;
+    Qt3DRender::QAttribute *m_normalAttribute;
+    Qt3DRender::QAttribute *m_texCoordAttribute;
+    Qt3DRender::QAttribute *m_indexAttribute;
+    Qt3DRender::QBuffer *m_positionBuffer;
+    Qt3DRender::QBuffer *m_vertexBuffer;
+    Qt3DRender::QBuffer *m_indexBuffer;
 };
 
-class Handler : public Qt3DCore::QBackendNode
-{
-public:
-    Handler();
-
-    void setManager(HandlerManager *manager) { m_logicManager = manager; }
-    HandlerManager *logicManager() const { return m_logicManager; }
-
-protected:
-    void sceneChangeEvent(const Qt3DCore::QSceneChangePtr &e) Q_DECL_OVERRIDE;
-
-private:
-    void initializeFromPeer(const Qt3DCore::QNodeCreatedChangeBasePtr &change) Q_DECL_FINAL;
-
-    HandlerManager *m_logicManager;
-};
-
-
-class HandlerFunctor : public Qt3DCore::QBackendNodeMapper
-{
-public:
-    explicit HandlerFunctor(HandlerManager *handler);
-
-    Qt3DCore::QBackendNode *create(const Qt3DCore::QNodeCreatedChangeBasePtr &change) const Q_DECL_OVERRIDE;
-    Qt3DCore::QBackendNode *get(Qt3DCore::QNodeId id) const Q_DECL_OVERRIDE;
-    void destroy(Qt3DCore::QNodeId id) const Q_DECL_OVERRIDE;
-
-private:
-    HandlerManager *m_manager;
-};
-
-} // namespace Logic
-} // namespace Qt3DLogic
+} // Qt3DExtras
 
 QT_END_NAMESPACE
 
-#endif // QT3DLOGIC_LOGIC_HANDLER_H
+#endif // QT3DEXTRAS_QVIRTUALREALITYGEOMETRY_P_H
+

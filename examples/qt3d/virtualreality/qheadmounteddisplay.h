@@ -3,6 +3,8 @@
 
 #include "qvirtualrealityapi.h"
 
+#include <frontend/qvirtualrealityaspect.h>
+
 #include <QOffscreenSurface>
 #include <QtCore/qpointer.h>
 #include <QScopedPointer>
@@ -81,6 +83,7 @@ private:
     Qt3DRender::QRenderAspect *m_renderAspect;
     Qt3DInput::QInputAspect *m_inputAspect;
     Qt3DLogic::QLogicAspect *m_logicAspect;
+    Qt3DVirtualReality::QVirtualRealityAspect *m_virtualRealityAspect;
 
     QUrl m_source;
     bool m_initialized;

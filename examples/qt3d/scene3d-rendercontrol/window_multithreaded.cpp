@@ -187,7 +187,7 @@ void QuickRenderer::ensureFbo()
         format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
         format.setTextureTarget(GL_TEXTURE_2D);
         format.setMipmap(false);
-        m_fbo = new QOpenGLFramebufferObject(texSize, format, m_tex.textureId());
+        m_fbo = new QOpenGLFramebufferObject(texSize, format);//, m_tex.textureId());
         m_quickWindow->setRenderTarget(m_fbo);
     }
 }

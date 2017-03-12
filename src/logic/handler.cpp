@@ -63,7 +63,7 @@ void Handler::sceneChangeEvent(const Qt3DCore::QSceneChangePtr &e)
     QBackendNode::sceneChangeEvent(e);
 }
 
-HandlerFunctor::HandlerFunctor(Manager *manager)
+HandlerFunctor::HandlerFunctor(HandlerManager *manager)
     : m_manager(manager)
 {
 }

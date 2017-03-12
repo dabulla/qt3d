@@ -13,6 +13,9 @@ class QRenderAspect;
 namespace Qt3DVirtualReality {
 
 class QVirtualRealityAspectPrivate;
+class QHeadMountedDisplay;
+//class QVirtualRealityApi;
+class QVirtualRealityApiBackend;
 
 //TO DO: might needs access to RenderAspect. UpdateWorldTransformJob must depend on QueryTrackedObjectsJob
 
@@ -22,6 +25,10 @@ class QT3DVR_EXPORT QVirtualRealityAspect : public Qt3DCore::QAbstractAspect
 public:
     explicit QVirtualRealityAspect(QObject *parent = nullptr);
     ~QVirtualRealityAspect();
+
+    void setHeadmountedDisplay(QHeadMountedDisplay *hmd);
+    //void setVirtualRealityApi(QVirtualRealityApi *api);
+    void setVirtualRealityApiBackend(QVirtualRealityApiBackend *apiBackend);
 private:
     QVariant executeCommand(const QStringList &args) Q_DECL_OVERRIDE;
     QVector<Qt3DCore::QAspectJobPtr> jobsToExecute(qint64 time) Q_DECL_OVERRIDE;
