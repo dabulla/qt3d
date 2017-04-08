@@ -49,11 +49,11 @@ namespace Qt3DRender {
 class QAttribute;
 } // Render
 
-namespace Qt3DExtras {
+namespace Qt3DVirtualReality {
 
-class QVirtualrealityGeometryPrivate;
+class QVirtualRealityGeometryPrivate;
 
-class QT3DVR_EXPORT QVirtualrealityGeometry : public Qt3DRender::QGeometry
+class QT3DVR_EXPORT QVirtualRealityGeometry : public Qt3DRender::QGeometry
 {
     Q_OBJECT
     Q_PROPERTY( bool hasTopEndcap READ hasTopEndcap WRITE setHasTopEndcap NOTIFY hasTopEndcapChanged )
@@ -69,8 +69,8 @@ class QT3DVR_EXPORT QVirtualrealityGeometry : public Qt3DRender::QGeometry
     Q_PROPERTY(Qt3DRender::QAttribute *indexAttribute READ indexAttribute CONSTANT)
 
 public:
-    explicit QVirtualrealityGeometry(QNode *parent = nullptr);
-    ~QVirtualrealityGeometry();
+    explicit QVirtualRealityGeometry(QNode *parent = nullptr);
+    ~QVirtualRealityGeometry();
 
     void updateVertices();
     void updateIndices();
@@ -107,13 +107,13 @@ Q_SIGNALS:
     void lengthChanged( float length );
 
 protected:
-    QVirtualrealityGeometry(QVirtualrealityGeometryPrivate &dd, QNode *parent = nullptr);
+    QVirtualRealityGeometry(QVirtualRealityGeometryPrivate &dd, QNode *parent = nullptr);
 
 private:
-    Q_DECLARE_PRIVATE(QVirtualrealityGeometry)
+    Q_DECLARE_PRIVATE(QVirtualRealityGeometry)
 };
 
-} // namespace Qt3DExtras
+} // namespace Qt3DVirtualReality
 
 QT_END_NAMESPACE
 

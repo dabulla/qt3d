@@ -38,17 +38,16 @@
 ****************************************************************************/
 
 /*!
- * \class Qt3DExtras::QVirtualrealityGeometry
- * \inheaderfile Qt3DExtras/QVirtualrealityGeometry
+ * \class Qt3DExtras::QVirtualRealityGeometry
+ * \inheaderfile Qt3DExtras/QVirtualRealityGeometry
  * \inmodule Qt3DExtras
- * \brief The QVirtualrealityGeometry class allows creation of a virtualreality in 3D space.
+ * \brief The QVirtualRealityGeometry class allows creation of a virtual reality representation of objects like controllers, hands, tracking cameras, lighthouses or tracking pucks in scenes.
  * \since 5.7
  * \ingroup geometries
  * \inherits Qt3DRender::QGeometry
  *
- * The QVirtualrealityGeometry class is most commonly used internally by the QVirtualrealityMesh
- * but can also be used in custom Qt3DRender::QGeometryRenderer subclasses. The class
- * allows for creation of both a virtualreality and a truncated virtualreality.
+ * The QVirtualRealityGeometry class is most commonly used internally by the QVirtualrealityMesh
+ * but can also be used in custom Qt3DRender::QGeometryRenderer subclasses.
  */
 
 // TO DO: Refactor from Cone
@@ -69,7 +68,7 @@ QT_BEGIN_NAMESPACE
 
 using namespace Qt3DRender;
 
-namespace Qt3DExtras {
+namespace Qt3DVirtualReality {
 
 namespace {
 
@@ -342,7 +341,7 @@ private:
 };
 
 
-QVirtualrealityGeometryPrivate::QVirtualrealityGeometryPrivate()
+QVirtualRealityGeometryPrivate::QVirtualRealityGeometryPrivate()
     : QGeometryPrivate()
     , m_hasTopEndcap(true)
     , m_hasBottomEndcap(true)
@@ -361,9 +360,9 @@ QVirtualrealityGeometryPrivate::QVirtualrealityGeometryPrivate()
 {
 }
 
-void QVirtualrealityGeometryPrivate::init()
+void QVirtualRealityGeometryPrivate::init()
 {
-    Q_Q(QVirtualrealityGeometry);
+    Q_Q(QVirtualRealityGeometry);
     m_positionAttribute = new QAttribute(q);
     m_normalAttribute = new QAttribute(q);
     m_texCoordAttribute = new QAttribute(q);
@@ -422,7 +421,7 @@ void QVirtualrealityGeometryPrivate::init()
 
 /*!
  * \qmltype VirtualrealityGeometry
- * \instantiates Qt3DExtras::QVirtualrealityGeometry
+ * \instantiates Qt3DExtras::QVirtualRealityGeometry
  * \inqmlmodule Qt3D.Extras
  * \brief VirtualrealityGeometry allows creation of a virtualreality in 3D space.
  *
@@ -497,32 +496,32 @@ void QVirtualrealityGeometryPrivate::init()
  * Holds the geometry index attribute.
  */
 
-QVirtualrealityGeometry::QVirtualrealityGeometry(QNode *parent)
-    : QGeometry(*new QVirtualrealityGeometryPrivate, parent)
+QVirtualRealityGeometry::QVirtualRealityGeometry(QNode *parent)
+    : QGeometry(*new QVirtualRealityGeometryPrivate, parent)
 {
-    Q_D(QVirtualrealityGeometry);
+    Q_D(QVirtualRealityGeometry);
     d->init();
 }
 
-QVirtualrealityGeometry::QVirtualrealityGeometry(QVirtualrealityGeometryPrivate &dd, QNode *parent)
+QVirtualRealityGeometry::QVirtualRealityGeometry(QVirtualRealityGeometryPrivate &dd, QNode *parent)
     :QGeometry(dd, parent)
 {
-    Q_D(QVirtualrealityGeometry);
+    Q_D(QVirtualRealityGeometry);
     d->init();
 }
 
 
 /*! \internal */
-QVirtualrealityGeometry::~QVirtualrealityGeometry()
+QVirtualRealityGeometry::~QVirtualRealityGeometry()
 {
 }
 
 /*!
  * Updates vertices based on geometry properties.
  */
-void QVirtualrealityGeometry::updateVertices()
+void QVirtualRealityGeometry::updateVertices()
 {
-    Q_D(QVirtualrealityGeometry);
+    Q_D(QVirtualRealityGeometry);
     const int nVerts = vertexCount(d->m_slices, d->m_rings,
                                    (d->m_hasTopEndcap + d->m_hasBottomEndcap));
 
@@ -536,9 +535,9 @@ void QVirtualrealityGeometry::updateVertices()
 /*!
  * Updates indices based on geometry properties.
  */
-void QVirtualrealityGeometry::updateIndices()
+void QVirtualRealityGeometry::updateIndices()
 {
-    Q_D(QVirtualrealityGeometry);
+    Q_D(QVirtualRealityGeometry);
     const int faces = faceCount(d->m_slices, d->m_rings,
                                 (d->m_hasTopEndcap + d->m_hasBottomEndcap));
 
@@ -548,73 +547,73 @@ void QVirtualrealityGeometry::updateIndices()
 }
 
 /*!
- * \property QVirtualrealityGeometry::hasTopEndcap
+ * \property QVirtualRealityGeometry::hasTopEndcap
  *
  * Determines if the virtualreality top is capped or open.
  */
 /*!
- * \property QVirtualrealityGeometry::hasBottomEndcap
+ * \property QVirtualRealityGeometry::hasBottomEndcap
  *
  * Determines if the virtualreality bottom is capped or open.
  */
 
 /*!
- * \property QVirtualrealityGeometry::rings
+ * \property QVirtualRealityGeometry::rings
  *
  * Holds the number of rings in the geometry.
  */
 
 /*!
- * \property QVirtualrealityGeometry::slices
+ * \property QVirtualRealityGeometry::slices
  *
  * Holds the number of slices in the geometry.
  */
 
 /*!
- * \property QVirtualrealityGeometry::topRadius
+ * \property QVirtualRealityGeometry::topRadius
  *
  * Holds the top radius of the virtualreality.
  */
 
 /*!
- * \property QVirtualrealityGeometry::bottomRadius
+ * \property QVirtualRealityGeometry::bottomRadius
  *
  * Holds the bottom radius of the virtualreality.
  */
 
 /*!
- * \property QVirtualrealityGeometry::length
+ * \property QVirtualRealityGeometry::length
  *
  * Holds the length of the virtualreality.
  */
 
 /*!
- * \property QVirtualrealityGeometry::positionAttribute
+ * \property QVirtualRealityGeometry::positionAttribute
  *
  * Holds the geometry position attribute.
  */
 
 /*!
- * \property QVirtualrealityGeometry::normalAttribute
+ * \property QVirtualRealityGeometry::normalAttribute
  *
  * Holds the geometry normal attribute.
  */
 
 /*!
- * \property QVirtualrealityGeometry::texCoordAttribute
+ * \property QVirtualRealityGeometry::texCoordAttribute
  *
  * Holds the geometry texture coordinate attribute.
  */
 
 /*!
- * \property QVirtualrealityGeometry::indexAttribute
+ * \property QVirtualRealityGeometry::indexAttribute
  *
  * Holds the geometry index attribute.
  */
 
-void QVirtualrealityGeometry::setHasTopEndcap(bool hasTopEndcap)
+void QVirtualRealityGeometry::setHasTopEndcap(bool hasTopEndcap)
 {
-    Q_D(QVirtualrealityGeometry);
+    Q_D(QVirtualRealityGeometry);
     if (hasTopEndcap != d->m_hasTopEndcap) {
         d->m_hasTopEndcap = hasTopEndcap;
         updateVertices();
@@ -622,9 +621,9 @@ void QVirtualrealityGeometry::setHasTopEndcap(bool hasTopEndcap)
     }
 }
 
-void QVirtualrealityGeometry::setHasBottomEndcap(bool hasBottomEndcap)
+void QVirtualRealityGeometry::setHasBottomEndcap(bool hasBottomEndcap)
 {
-    Q_D(QVirtualrealityGeometry);
+    Q_D(QVirtualRealityGeometry);
     if (hasBottomEndcap != d->m_hasBottomEndcap) {
         d->m_hasBottomEndcap = hasBottomEndcap;
         updateVertices();
@@ -632,9 +631,9 @@ void QVirtualrealityGeometry::setHasBottomEndcap(bool hasBottomEndcap)
     }
 }
 
-void QVirtualrealityGeometry::setRings(int rings)
+void QVirtualRealityGeometry::setRings(int rings)
 {
-    Q_D(QVirtualrealityGeometry);
+    Q_D(QVirtualRealityGeometry);
     if (rings != d->m_rings) {
         d->m_rings = rings;
         updateVertices();
@@ -643,9 +642,9 @@ void QVirtualrealityGeometry::setRings(int rings)
     }
 }
 
-void QVirtualrealityGeometry::setSlices(int slices)
+void QVirtualRealityGeometry::setSlices(int slices)
 {
-    Q_D(QVirtualrealityGeometry);
+    Q_D(QVirtualRealityGeometry);
     if (slices != d->m_slices) {
         d->m_slices = slices;
         updateVertices();
@@ -654,9 +653,9 @@ void QVirtualrealityGeometry::setSlices(int slices)
     }
 }
 
-void QVirtualrealityGeometry::setTopRadius(float topRadius)
+void QVirtualRealityGeometry::setTopRadius(float topRadius)
 {
-    Q_D(QVirtualrealityGeometry);
+    Q_D(QVirtualRealityGeometry);
     if (topRadius != d->m_topRadius) {
         d->m_topRadius = topRadius;
         updateVertices();
@@ -664,9 +663,9 @@ void QVirtualrealityGeometry::setTopRadius(float topRadius)
     }
 }
 
-void QVirtualrealityGeometry::setBottomRadius(float bottomRadius)
+void QVirtualRealityGeometry::setBottomRadius(float bottomRadius)
 {
-    Q_D(QVirtualrealityGeometry);
+    Q_D(QVirtualRealityGeometry);
     if (bottomRadius != d->m_bottomRadius) {
         d->m_bottomRadius = bottomRadius;
         updateVertices();
@@ -674,9 +673,9 @@ void QVirtualrealityGeometry::setBottomRadius(float bottomRadius)
     }
 }
 
-void QVirtualrealityGeometry::setLength(float length)
+void QVirtualRealityGeometry::setLength(float length)
 {
-    Q_D(QVirtualrealityGeometry);
+    Q_D(QVirtualRealityGeometry);
     if (length != d->m_length) {
         d->m_length = length;
         updateVertices();
@@ -685,72 +684,72 @@ void QVirtualrealityGeometry::setLength(float length)
     }
 }
 
-bool QVirtualrealityGeometry::hasTopEndcap() const
+bool QVirtualRealityGeometry::hasTopEndcap() const
 {
-    Q_D(const QVirtualrealityGeometry);
+    Q_D(const QVirtualRealityGeometry);
     return d->m_hasTopEndcap;
 }
 
-bool QVirtualrealityGeometry::hasBottomEndcap() const
+bool QVirtualRealityGeometry::hasBottomEndcap() const
 {
-    Q_D(const QVirtualrealityGeometry);
+    Q_D(const QVirtualRealityGeometry);
     return d->m_hasBottomEndcap;
 }
 
-float QVirtualrealityGeometry::topRadius() const
+float QVirtualRealityGeometry::topRadius() const
 {
-    Q_D(const QVirtualrealityGeometry);
+    Q_D(const QVirtualRealityGeometry);
     return d->m_topRadius;
 }
 
-float QVirtualrealityGeometry::bottomRadius() const
+float QVirtualRealityGeometry::bottomRadius() const
 {
-    Q_D(const QVirtualrealityGeometry);
+    Q_D(const QVirtualRealityGeometry);
     return d->m_bottomRadius;
 }
 
-int QVirtualrealityGeometry::rings() const
+int QVirtualRealityGeometry::rings() const
 {
-    Q_D(const QVirtualrealityGeometry);
+    Q_D(const QVirtualRealityGeometry);
     return d->m_rings;
 }
 
-int QVirtualrealityGeometry::slices() const
+int QVirtualRealityGeometry::slices() const
 {
-    Q_D(const QVirtualrealityGeometry);
+    Q_D(const QVirtualRealityGeometry);
     return d->m_slices;
 }
 
-float QVirtualrealityGeometry::length() const
+float QVirtualRealityGeometry::length() const
 {
-    Q_D(const QVirtualrealityGeometry);
+    Q_D(const QVirtualRealityGeometry);
     return d->m_length;
 }
 
-QAttribute *QVirtualrealityGeometry::positionAttribute() const
+QAttribute *QVirtualRealityGeometry::positionAttribute() const
 {
-    Q_D(const QVirtualrealityGeometry);
+    Q_D(const QVirtualRealityGeometry);
     return d->m_positionAttribute;
 }
 
-QAttribute *QVirtualrealityGeometry::normalAttribute() const
+QAttribute *QVirtualRealityGeometry::normalAttribute() const
 {
-    Q_D(const QVirtualrealityGeometry);
+    Q_D(const QVirtualRealityGeometry);
     return d->m_normalAttribute;
 }
 
-QAttribute *QVirtualrealityGeometry::texCoordAttribute() const
+QAttribute *QVirtualRealityGeometry::texCoordAttribute() const
 {
-    Q_D(const QVirtualrealityGeometry);
+    Q_D(const QVirtualRealityGeometry);
     return d->m_texCoordAttribute;
 }
 
-QAttribute *QVirtualrealityGeometry::indexAttribute() const
+QAttribute *QVirtualRealityGeometry::indexAttribute() const
 {
-    Q_D(const QVirtualrealityGeometry);
+    Q_D(const QVirtualRealityGeometry);
     return d->m_indexAttribute;
 }
 
-} // namespace Qt3DExtras
+} // namespace Qt3DVirtualReality
 
 QT_END_NAMESPACE

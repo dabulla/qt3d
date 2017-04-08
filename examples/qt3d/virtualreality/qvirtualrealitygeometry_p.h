@@ -62,16 +62,16 @@ class QBuffer;
 
 } // namespace Qt3DRender
 
-namespace Qt3DExtras {
+namespace Qt3DVirtualReality {
 
-class QVirtualrealityGeometryPrivate : public Qt3DRender::QGeometryPrivate
+class QVirtualRealityGeometryPrivate : public Qt3DRender::QGeometryPrivate
 {
 public:
-    QVirtualrealityGeometryPrivate();
+    QVirtualRealityGeometryPrivate();
 
     void init();
 
-    Q_DECLARE_PUBLIC(QVirtualrealityGeometry)
+    Q_DECLARE_PUBLIC(QVirtualRealityGeometry)
 
     bool m_hasTopEndcap;
     bool m_hasBottomEndcap;
@@ -89,7 +89,7 @@ public:
     Qt3DRender::QBuffer *m_indexBuffer;
 };
 
-} // Qt3DExtras
+} // Qt3DVirtualReality
 
 QT_END_NAMESPACE
 
