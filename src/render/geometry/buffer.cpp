@@ -101,13 +101,17 @@ void Buffer::executeFunctor()
 //Called from th sendBufferJob
 void Buffer::updateDataFromGPUToCPU(QByteArray data)
 {
-    m_data = data;
-    // Send data back to the frontend
-    auto e = Qt3DCore::QPropertyUpdatedChangePtr::create(peerId());
-    e->setDeliveryFlags(Qt3DCore::QSceneChange::DeliverToAll);
-    e->setPropertyName("downloadedData");
-    e->setValue(QVariant::fromValue(m_data));
-    notifyObservers(e);
+    // If buffer has just been set from cpu, do not overwrite.
+    // dirty flag indicates, cpu data has not been uploaded to gpu yet.
+    if(!m_bufferDirty) {
+        m_data = data;
+        // Send data back to the frontend
+        auto e = Qt3DCore::QPropertyUpdatedChangePtr::create(peerId());
+        e->setDeliveryFlags(Qt3DCore::QSceneChange::DeliverToAll);
+        e->setPropertyName("downloadedData");
+        e->setValue(QVariant::fromValue(m_data));
+        notifyObservers(e);
+    }
 }
 
 void Buffer::initializeFromPeer(const Qt3DCore::QNodeCreatedChangeBasePtr &change)

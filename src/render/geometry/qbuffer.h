@@ -70,7 +70,8 @@ public:
         PixelUnpackBuffer   = 0x88EC, // GL_PIXEL_UNPACK_BUFFER
         UniformBuffer       = 0x8A11, // GL_UNIFORM_BUFFER
         ShaderStorageBuffer = 0x90D2, // GL_SHADER_STORAGE_BUFFER
-        DrawIndirectBuffer  = 0x8F3F  // GL_DRAW_INDIRECT_BUFFER
+        DrawIndirectBuffer  = 0x8F3F, // GL_DRAW_INDIRECT_BUFFER
+        AtomicCounterBuffer = 0x92C0  // GL_ATOMIC_COUNTER_BUFFER
     };
     Q_ENUM(BufferType) // LCOV_EXCL_LINE
 

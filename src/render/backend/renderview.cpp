@@ -546,24 +546,44 @@ void RenderView::updateMatrices()
     }
 }
 
+void RenderView::setUniformAtomicCounter(ShaderParameterPack &uniformPack, int nameId, const Qt3DCore::QNodeId& nodeId) const
+{
+    uniformPack.setAtomicCounterBuffer(nameId, nodeId);
+}
+
 void RenderView::setUniformValue(ShaderParameterPack &uniformPack, int nameId, const UniformValue &value) const
 {
     // At this point a uniform value can only be a scalar type
-    // or a Qt3DCore::QNodeId corresponding to a Texture
+    // or a Qt3DCore::QNodeId corresponding to a Texture or AtomicUniformBuffer
     // ShaderData/Buffers would be handled as UBO/SSBO and would therefore
     // not be in the default uniform block
-    if (value.valueType() == UniformValue::NodeId) {
-        const Qt3DCore::QNodeId texId = *value.constData<Qt3DCore::QNodeId>();
-        const Texture *tex =  m_manager->textureManager()->lookupResource(texId);
-        if (tex != nullptr) {
-            uniformPack.setTexture(nameId, texId);
-            UniformValue::Texture textureValue;
-            textureValue.nodeId = texId;
-            uniformPack.setUniform(nameId, UniformValue(textureValue));
+    if(value.valueType() == UniformValue::NodeId) {
+        const Qt3DCore::QNodeId nodeId = *value.constData<Qt3DCore::QNodeId>();
+        const Texture *tex = m_manager->textureManager()->lookupResource(nodeId);
+        if(tex != nullptr) {
+            setUniformTexture(uniformPack, nameId, tex, nodeId);
+        } else {
+            const Buffer *buf = m_manager->bufferManager()->lookupResource(nodeId);
+            if (buf != nullptr) {
+                setUniformAtomicCounter(uniformPack, nameId, nodeId);
+            }
         }
     } else {
-        uniformPack.setUniform(nameId, value);
+        setUniformScalarValue(uniformPack, nameId, value);
     }
+}
+
+void RenderView::setUniformTexture(ShaderParameterPack &uniformPack, int nameId, const Texture *tex, const Qt3DCore::QNodeId& nodeId) const
+{
+    uniformPack.setTexture(nameId, nodeId);
+    UniformValue::Texture textureValue;
+    textureValue.nodeId = nodeId;
+    uniformPack.setUniform(nameId, UniformValue(tex));
+}
+
+void RenderView::setUniformScalarValue(ShaderParameterPack &uniformPack, int nameId, const UniformValue &value) const
+{
+    uniformPack.setUniform(nameId, value);
 }
 
 void RenderView::setStandardUniformValue(ShaderParameterPack &uniformPack, int glslNameId, int nameId, const QMatrix4x4 &worldTransform) const
@@ -735,6 +755,7 @@ void RenderView::setShaderAndUniforms(RenderCommand *command, RenderPass *rPass,
             const QVector<int> uniformBlockNamesIds = shader->uniformBlockNamesIds();
             const QVector<int> shaderStorageBlockNamesIds = shader->storageBlockNamesIds();
             const QVector<int> attributeNamesIds = shader->attributeNamesIds();
+            const QHash<int, int> uniformAtomicCounterNamesIdToBufferIndex = shader->uniformAtomicCounterNamesIdToBufferIndex();
 
             // Set fragData Name and index
             // Later on we might want to relink the shader if attachments have changed
@@ -771,12 +792,14 @@ void RenderView::setShaderAndUniforms(RenderCommand *command, RenderPass *rPass,
                 const ParameterInfoList::const_iterator parametersEnd = parameters.cend();
 
                 while (it != parametersEnd) {
-                    if (uniformNamesIds.contains(it->nameId)) { // Parameter is a regular uniform
-                        setUniformValue(command->m_parameterPack, it->nameId, it->value);
+                    if (uniformNamesIds.contains(it->nameId)) {
+                        int nameIdOrIndex = uniformAtomicCounterNamesIdToBufferIndex.value(it->nameId, it->nameId);
+                        setUniformValue(command->m_parameterPack, nameIdOrIndex, it->value);
                     } else if (uniformBlockNamesIds.indexOf(it->nameId) != -1) { // Parameter is a uniform block
                         setUniformBlockValue(command->m_parameterPack, shader, shader->uniformBlockForBlockNameId(it->nameId), it->value);
                     } else if (shaderStorageBlockNamesIds.indexOf(it->nameId) != -1) { // Parameters is a SSBO
                         setShaderStorageValue(command->m_parameterPack, shader, shader->storageBlockForBlockNameId(it->nameId), it->value);
+                    //} else if(it->value.valueType() == UniformValue::BufferValue && it->value.) {
                     } else { // Parameter is a struct
                         const UniformValue &v = it->value;
                         ShaderData *shaderData = nullptr;

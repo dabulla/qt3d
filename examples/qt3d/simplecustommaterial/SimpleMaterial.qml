@@ -49,17 +49,18 @@
 ****************************************************************************/
 
 import Qt3D.Core 2.0
-import Qt3D.Render 2.0
+import Qt3D.Render 2.9
 
 Material {
     id: root
+    property var atomicCounterBuffer
 
     property color maincolor: Qt.rgba(0.0, 0.0, 0.0, 1.0)
 
     parameters: [
         Parameter {
-            name: "maincolor"
-            value: Qt.vector3d(root.maincolor.r, root.maincolor.g, root.maincolor.b)
+            name: "myatomiccounter"
+            value: atomicCounterBuffer
         }
     ]
 
@@ -88,20 +89,19 @@ Material {
         techniques: [
             // OpenGL 3.1
             Technique {
-                filterKeys: [forward]
                 graphicsApiFilter {
                     api: GraphicsApiFilter.OpenGL
                     profile: GraphicsApiFilter.CoreProfile
-                    majorVersion: 3
-                    minorVersion: 1
+                    majorVersion: 4
+                    minorVersion: 2
                 }
                 renderPasses: RenderPass {
+                    filterKeys: [forward]
                     shaderProgram: gl3Shader
                 }
             },
             // ES 2.0
             Technique {
-                filterKeys: [forward]
                 graphicsApiFilter {
                     api: GraphicsApiFilter.OpenGLES
                     profile: GraphicsApiFilter.CoreProfile
@@ -109,6 +109,7 @@ Material {
                     minorVersion: 0
                 }
                 renderPasses: RenderPass {
+                    filterKeys: [forward]
                     shaderProgram: es2Shader
                 }
             }

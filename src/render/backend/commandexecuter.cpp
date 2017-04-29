@@ -260,7 +260,7 @@ QJsonObject parameterPackToJson(const Render::ShaderParameterPack &pack)
     obj.insert(QLatin1String("uniforms"), uniformsArray);
 
     QJsonArray texturesArray;
-    const QVector<Render::ShaderParameterPack::NamedTexture> &textures = pack.textures();
+    const QVector<Render::ShaderParameterPack::NamedBuffer> &textures = pack.textures();
     for (const auto & texture : textures) {
         QJsonObject textureObj;
         textureObj.insert(QLatin1String("name"), Render::StringToInt::lookupString(texture.glslNameId));

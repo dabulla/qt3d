@@ -49,31 +49,63 @@
 ****************************************************************************/
 
 import Qt3D.Core 2.0
-import Qt3D.Render 2.0
+import Qt3D.Render 2.9
 import Qt3D.Extras 2.0
+import Qt3D.Logic 2.0
+import QtQuick 2.0 as QQ2
 
 Entity {
-    id: sceneRoot
+    id: root
 
-    Camera {
-        id: camera
-        projectionType: CameraLens.PerspectiveProjection
-        fieldOfView: 45
-        nearPlane: 0.1
-        farPlane: 1000.0
-        position: Qt.vector3d(0.0, 0.0, 2.0)
-        upVector: Qt.vector3d(0.0, 1.0, 0.0)
-        viewCenter: Qt.vector3d(0.0, 0.0, 0.0)
+    components: [transform, mesh, materialUi]
+
+    Transform {
+        id: transform
+        rotationX: 0
     }
 
-    components: [
-        RenderSettings {
-            activeFrameGraph: ForwardRenderer {
-                id: renderer
-                clearColor: "#2d2d2d"
-                camera: camera
+    PlaneMesh {
+        id: mesh
+        width: 10.0
+        height: 100.0
+        meshResolution: Qt.size(2, 2)
+    }
+
+    Material {
+        id: materialUi
+
+        effect: Effect {
+            FilterKey {
+                id: uiFilter
+                name: "renderingStyle"
+                value: "ui"
             }
+            ShaderProgram {
+                id: uiShader
+                vertexShaderCode:
+"#version 150 core
+in vec3 vertexPosition;
+void main() {
+    gl_Position = vec4(vertexPosition, 1.0);
+}
+"
+                fragmentShaderCode:
+"#version 150 core
+out vec4 fragColor;
+void main() {
+    fragColor = vec4(1.0);
+}
+"
+            }
+
+            techniques: [
+                Technique {
+                    filterKeys: [uiFilter]
+                    renderPasses: RenderPass {
+                        shaderProgram: uiShader
+                    }
+                }
+            ]
         }
-    ]
-    PlaneModel { }
+    }
 }

@@ -1,11 +1,13 @@
-#version 150 core
+#version 440
 
-uniform vec3 maincolor;
 out vec4 fragColor;
+
+layout(binding = 7, offset = 0) uniform atomic_uint myatomiccounter;
 
 void main()
 {
-    //output color from material
-    fragColor = vec4(maincolor,1.0);
+    uint cval = atomicCounterIncrement(myatomiccounter);
+    float val = float(cval);
+    fragColor = vec4(val/100000.0, val/1000000.0, val/10000000.0,1.0);
 }
 

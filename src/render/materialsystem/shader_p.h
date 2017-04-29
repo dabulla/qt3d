@@ -91,6 +91,7 @@ public:
     inline QVector<int> uniformBlockNamesIds() const { return m_uniformBlockNamesIds; }
     inline QVector<int> storageBlockNamesIds() const { return m_shaderStorageBlockNamesIds; }
     inline QVector<int> attributeNamesIds() const { return m_attributeNamesIds; }
+    inline QHash<int, int> uniformAtomicCounterNamesIdToBufferIndex() const { return m_uniformAtomicCounterNamesIdToBufferIndex; }
 
     QVector<QString> uniformsNames() const;
     QVector<QString> attributesNames() const;
@@ -143,6 +144,8 @@ private:
     QVector<QString> m_shaderStorageBlockNames;
     QVector<int> m_shaderStorageBlockNamesIds;
     QVector<ShaderStorageBlock> m_shaderStorageBlocks;
+
+    QHash<int, int> m_uniformAtomicCounterNamesIdToBufferIndex;
 
     QHash<QString, int> m_fragOutputs;
 

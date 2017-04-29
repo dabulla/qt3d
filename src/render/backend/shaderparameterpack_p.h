@@ -100,38 +100,41 @@ public:
     void setUniformBuffer(BlockToUBO blockToUBO);
     void setShaderStorageBuffer(BlockToSSBO blockToSSBO);
     void setSubmissionUniform(const ShaderUniform &uniform);
+    void setAtomicCounterBuffer(const int glslNameId, const Qt3DCore::QNodeId id);
 
     inline PackUniformHash &uniforms() { return m_uniforms; }
     inline const PackUniformHash &uniforms() const { return m_uniforms; }
     UniformValue uniform(const int glslNameId) const { return m_uniforms.value(glslNameId); }
 
-    struct NamedTexture
+    struct NamedBuffer
     {
-        NamedTexture() {}
-        NamedTexture(const int nm, Qt3DCore::QNodeId t)
+        NamedBuffer() {}
+        NamedBuffer(const int nm, Qt3DCore::QNodeId t)
             : glslNameId(nm)
-            , texId(t)
+            , nodeId(t)
         { }
 
         int glslNameId;
-        Qt3DCore::QNodeId texId;
+        Qt3DCore::QNodeId nodeId;
     };
 
-    inline QVector<NamedTexture> textures() const { return m_textures; }
+    inline QVector<NamedBuffer> textures() const { return m_textures; }
     inline QVector<BlockToUBO> uniformBuffers() const { return m_uniformBuffers; }
     inline QVector<BlockToSSBO> shaderStorageBuffers() const { return m_shaderStorageBuffers; }
     inline QVector<ShaderUniform> submissionUniforms() const { return m_submissionUniforms; }
+    inline QVector<NamedBuffer> atomicCounterBuffers() const { return m_atomicCounters; }
 private:
     PackUniformHash m_uniforms;
 
-    QVector<NamedTexture> m_textures;
+    QVector<NamedBuffer> m_textures;
     QVector<BlockToUBO> m_uniformBuffers;
     QVector<BlockToSSBO> m_shaderStorageBuffers;
     QVector<ShaderUniform> m_submissionUniforms;
+    QVector<NamedBuffer> m_atomicCounters;
 
     friend class RenderView;
 };
-QT3D_DECLARE_TYPEINFO_2(Qt3DRender, Render, ShaderParameterPack::NamedTexture, Q_PRIMITIVE_TYPE)
+QT3D_DECLARE_TYPEINFO_2(Qt3DRender, Render, ShaderParameterPack::NamedBuffer, Q_PRIMITIVE_TYPE)
 
 } // namespace Render
 } // namespace Qt3DRender

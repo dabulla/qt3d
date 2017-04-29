@@ -88,6 +88,7 @@ struct ShaderUniform
         , m_blockIndex(-1)
         , m_arrayStride(-1)
         , m_matrixStride(-1)
+        , m_atomicCounterIndex(-1)
         , m_rawByteSize(0)
     {}
 
@@ -100,6 +101,7 @@ struct ShaderUniform
     int m_blockIndex; // -1 is the default, >= 0 if uniform defined in uniform block
     int m_arrayStride; // -1 is the default, >= 0 if uniform defined in uniform block and if it's an array
     int m_matrixStride; // -1 is the default, >= 0 uniform defined in uniform block and is a matrix
+    int m_atomicCounterIndex; // -1 is the default. >= 0 uniform is an atomc counter. TODO: Store atomicCounterIndex in m_nameId, it should not collide.
     uint m_rawByteSize; // contains byte size (size / type / strides)
     // size, offset and strides are in bytes
 };

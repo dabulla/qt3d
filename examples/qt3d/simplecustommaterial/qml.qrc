@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>SceneRoot.qml</file>
         <file>SimpleMaterial.qml</file>
         <file>PlaneModel.qml</file>
     </qresource>

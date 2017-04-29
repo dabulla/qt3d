@@ -253,6 +253,11 @@ QVector<ShaderUniform> GraphicsHelperGL4::programUniformsAndLocations(GLuint pro
         m_funcs->glGetActiveUniformsiv(programId, 1, (GLuint*)&i, GL_UNIFORM_OFFSET, &uniform.m_offset);
         m_funcs->glGetActiveUniformsiv(programId, 1, (GLuint*)&i, GL_UNIFORM_ARRAY_STRIDE, &uniform.m_arrayStride);
         m_funcs->glGetActiveUniformsiv(programId, 1, (GLuint*)&i, GL_UNIFORM_MATRIX_STRIDE, &uniform.m_matrixStride);
+        if(uniform.m_type == GL_UNSIGNED_INT_ATOMIC_COUNTER) {
+            int atomicCounterIndex;
+            m_funcs->glGetActiveUniformsiv(programId, 1, (GLuint*)&i, GL_UNIFORM_ATOMIC_COUNTER_BUFFER_INDEX , &atomicCounterIndex);
+            m_funcs->glGetActiveAtomicCounterBufferiv(programId, atomicCounterIndex, GL_ATOMIC_COUNTER_BUFFER_BINDING, &uniform.m_atomicCounterIndex);
+        }
         uniform.m_rawByteSize = uniformByteSize(uniform);
         uniforms.append(uniform);
         qCDebug(Render::Rendering) << uniform.m_name << "size" << uniform.m_size
@@ -480,6 +485,7 @@ UniformType GraphicsHelperGL4::uniformTypeFromGLType(GLenum type)
         return UniformType::IVec3;
     case GL_INT_VEC4:
         return UniformType::IVec4;
+    case GL_UNSIGNED_INT_ATOMIC_COUNTER:
     case GL_UNSIGNED_INT:
         return UniformType::UInt;
     case GL_UNSIGNED_INT_VEC2:
@@ -660,6 +666,7 @@ bool GraphicsHelperGL4::supportsFeature(GraphicsHelperInterface::Feature feature
     case DrawBuffersBlend:
     case BlitFramebuffer:
     case IndirectDrawing:
+    case AtomicCounters:
         return true;
     default:
         return false;
@@ -888,6 +895,7 @@ void GraphicsHelperGL4::buildUniformBuffer(const QVariant &v, const ShaderUnifor
     case GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE:
     case GL_SAMPLER_2D_MULTISAMPLE_ARRAY:
     case GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:
+    case GL_UNSIGNED_INT_ATOMIC_COUNTER: // core since version OpenGL 4.2
     case GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY: {
         Q_ASSERT(description.m_size == 1);
         int value = v.toInt();
@@ -1017,6 +1025,7 @@ uint GraphicsHelperGL4::uniformByteSize(const ShaderUniform &description)
     case GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE:
     case GL_SAMPLER_2D_MULTISAMPLE_ARRAY:
     case GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:
+    case GL_UNSIGNED_INT_ATOMIC_COUNTER: // core since version OpenGL 4.2
     case GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:
         rawByteSize = 4;
         break;

@@ -81,7 +81,8 @@ public:
         DrawBuffersBlend,
         BlitFramebuffer,
         IndirectDrawing,
-        MapBuffer
+        MapBuffer,
+        AtomicCounters
     };
 
     virtual ~GraphicsHelperInterface() {}

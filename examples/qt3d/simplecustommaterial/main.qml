@@ -48,38 +48,53 @@
 **
 ****************************************************************************/
 
-import QtQuick 2.0
-import QtQuick.Scene3D 2.0
-import Qt3D.Render 2.0
+import Qt3D.Core 2.0
+import Qt3D.Render 2.9
+import Qt3D.Extras 2.0
 
-Item {
+Entity {
+    id: sceneRoot
 
-    Rectangle {
-        id: scene
-        property bool colorChange: true
-        anchors.fill: parent
-        color: "White"
+    Camera {
+        id: cam
+        projectionType: CameraLens.PerspectiveProjection
+        fieldOfView: 45
+        nearPlane: 0.1
+        farPlane: 1000.0
+        position: Qt.vector3d(0.0, 0.0, 2.0)
+        upVector: Qt.vector3d(0.0, 1.0, 0.0)
+        viewCenter: Qt.vector3d(0.0, 0.0, 0.0)
+    }
 
-        transform: Rotation {
-            id: sceneRotation
-            axis.x: 1
-            axis.y: 0
-            axis.z: 0
-            origin.x: scene.width / 2
-            origin.y: scene.height / 2
-        }
+    components: [
+        RenderSettings {
+            activeFrameGraph: Viewport {
+                normalizedRect: Qt.rect(0.0, 0.0, 1.0, 1.0)
 
-        Scene3D {
-            id: scene3d
-            anchors.fill: parent
-            anchors.margins: 10
-            focus: true
-            aspects: ["input", "logic"]
-            cameraAspectRatioMode: Scene3D.AutomaticAspectRatio
+                RenderSurfaceSelector {
+                    RenderPassFilter {
+                        matchAny: FilterKey { name: "renderingStyle"; value: "forward" }
 
-            SceneRoot {
-                id: root
+                        ClearBuffers {
+                            clearColor: "#2d2d2d"
+                            buffers: ClearBuffers.ColorDepthBuffer
+                            BufferCapture {
+                                MemoryBarrier {
+                                    waitFor: MemoryBarrier.AtomicCounter
+                                    CameraSelector {
+                                        id: viewCameraSelector
+                                        camera: cam
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    RenderPassFilter {
+                        matchAny: [ FilterKey { name: "renderingStyle"; value: "ui" } ]
+                    }
+                }
             }
         }
-    }
+    ]
+    PlaneModel { }
 }

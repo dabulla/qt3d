@@ -324,6 +324,9 @@ private:
 
     UniformValue standardUniformValue(StandardUniform standardUniformType, const QMatrix4x4 &model) const;
 
+    void setUniformScalarValue(ShaderParameterPack &uniformPack, int nameId, const UniformValue &value) const;
+    void setUniformTexture(ShaderParameterPack &uniformPack, int nameId, const Texture *tex, const Qt3DCore::QNodeId& nodeId) const;
+    void setUniformAtomicCounter(ShaderParameterPack &uniformPack, int nameId, const Qt3DCore::QNodeId &nodeId) const;
     void setUniformValue(ShaderParameterPack &uniformPack, int nameId, const UniformValue &value) const;
     void setStandardUniformValue(ShaderParameterPack &uniformPack, int glslNameId, int nameId, const QMatrix4x4 &worldTransform) const;
     void setUniformBlockValue(ShaderParameterPack &uniformPack,

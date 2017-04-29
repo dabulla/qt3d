@@ -344,6 +344,9 @@ void Shader::initializeUniforms(const QVector<ShaderUniform> &uniformsDescriptio
             qCDebug(Shaders) << "Active Uniform in Default Block " << uniformsDescription[i].m_name << uniformsDescription[i].m_blockIndex;
             activeUniformsInDefaultBlock.insert(uniformsDescription[i].m_name, uniformsDescription[i]);
         }
+        if (uniformsDescription[i].m_location == -1) { // AtomicCounter. TODO: Test if m_blockIndex is -1 for them and if this intersects
+            m_uniformAtomicCounterNamesIdToBufferIndex[m_uniforms[i].m_nameId] = m_uniforms[i].m_atomicCounterIndex;
+        }
     }
     m_uniformBlockIndexToShaderUniforms.insert(-1, activeUniformsInDefaultBlock);
 }
@@ -419,6 +422,7 @@ void Shader::initializeFromReference(const Shader &other)
 {
     Q_ASSERT(m_dna == other.m_dna);
     m_uniformsNamesIds = other.m_uniformsNamesIds;
+    m_uniformAtomicCounterNamesIdToBufferIndex = other.m_uniformAtomicCounterNamesIdToBufferIndex;
     m_uniformsNames = other.m_uniformsNames;
     m_uniforms = other.m_uniforms;
     m_attributesNames = other.m_attributesNames;

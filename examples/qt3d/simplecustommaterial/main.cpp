@@ -48,17 +48,13 @@
 **
 ****************************************************************************/
 
+#include <Qt3DQuickExtras/qt3dquickwindow.h>
 #include <QGuiApplication>
-#include <QQuickView>
 
-int main(int argc, char **argv)
+int main(int argc, char* argv[])
 {
     QGuiApplication app(argc, argv);
-
-    QQuickView view;
-
-    view.resize(1024, 1024);
-    view.setResizeMode(QQuickView::SizeRootObjectToView);
+    Qt3DExtras::Quick::Qt3DQuickWindow view;
     view.setSource(QUrl("qrc:/main.qml"));
     view.show();
 

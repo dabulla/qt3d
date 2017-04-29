@@ -49,8 +49,10 @@
 ****************************************************************************/
 
 import Qt3D.Core 2.0
-import Qt3D.Render 2.0
+import Qt3D.Render 2.9
 import Qt3D.Extras 2.0
+import Qt3D.Logic 2.0
+import QtQuick 2.0 as QQ2
 
 Entity {
     id: root
@@ -59,12 +61,45 @@ Entity {
 
     SimpleMaterial {
         id: material
-        maincolor: "red"
+        maincolor: "green"
+        atomicCounterBuffer: atomicBuffer
+    }
+    FrameAction {
+        onTriggered: {
+            atomicBuffer.data = atomicBuffer.buildAtomicCounter()
+        }
+    }
+    Buffer {
+        id: atomicBuffer
+        type: Buffer.AtomicCounterBuffer
+        accessType: Buffer.ReadWrite
+        data: buildAtomicCounter()
+        onDataChanged: {
+            var bufferData = new Uint32Array(data)
+            var atomicCounter = bufferData[0]
+            if(atomicCounter > 0) {
+                console.log("DataChanged " + atomicCounter)
+            }
+        }
+        function buildAtomicCounter() {
+            var bufferData = new Uint32Array(1)
+            bufferData[0] = 0
+            atomicBuffer.data = bufferData
+        }
     }
 
     Transform {
         id: transform
         rotationX: 45
+    }
+
+    QQ2.NumberAnimation {
+        target: transform
+        property: "rotationX"
+        from: 0; to: 90
+        duration: 10000
+        loops: QQ2.Animation.Infinite
+        running: true
     }
 
     PlaneMesh {

@@ -71,11 +71,11 @@ void ShaderParameterPack::setTexture(const int glslNameId, Qt3DCore::QNodeId tex
         if (m_textures[t].glslNameId != glslNameId)
             continue;
 
-        m_textures[t].texId = texId;
+        m_textures[t].nodeId = texId;
         return;
     }
 
-    m_textures.append(NamedTexture(glslNameId, texId));
+    m_textures.append(NamedBuffer(glslNameId, texId));
 }
 
 // Contains Uniform Block Index and QNodeId of the ShaderData (UBO)
@@ -92,6 +92,11 @@ void ShaderParameterPack::setShaderStorageBuffer(BlockToSSBO blockToSSBO)
 void ShaderParameterPack::setSubmissionUniform(const ShaderUniform &uniform)
 {
     m_submissionUniforms.push_back(uniform);
+}
+
+void ShaderParameterPack::setAtomicCounterBuffer(const int glslNameId, const Qt3DCore::QNodeId id)
+{
+    m_atomicCounters.append(NamedBuffer(glslNameId, id));
 }
 
 } // namespace Render

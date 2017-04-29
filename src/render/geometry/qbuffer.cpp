@@ -220,6 +220,8 @@ QBufferPrivate::QBufferPrivate()
  *        GL_SHADER_STORAGE_BUFFER
  * \value DrawIndirectBuffer
  *        GL_DRAW_INDIRECT_BUFFER
+ * \value AtomicCounterBuffer
+ *        GL_ATOMIC_COUNTER_BUFFER
  */
 
 /*!

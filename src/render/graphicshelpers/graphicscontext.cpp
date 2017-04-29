@@ -135,6 +135,8 @@ GLBuffer::Type bufferTypeToGLBufferType(QBuffer::BufferType type)
         return GLBuffer::ShaderStorageBuffer;
     case QBuffer::DrawIndirectBuffer:
         return GLBuffer::DrawIndirectBuffer;
+    case QBuffer::AtomicCounterBuffer:
+        return GLBuffer::AtomicCounterBuffer;
     default:
         Q_UNREACHABLE();
     }
@@ -1173,10 +1175,10 @@ void GraphicsContext::setParameters(ShaderParameterPack &parameterPack)
     PackUniformHash &uniformValues = parameterPack.uniforms();
 
     for (int i = 0; i < parameterPack.textures().size(); ++i) {
-        const ShaderParameterPack::NamedTexture &namedTex = parameterPack.textures().at(i);
+        const ShaderParameterPack::NamedBuffer &namedTex = parameterPack.textures().at(i);
         // Given a Texture QNodeId, we retrieve the associated shared GLTexture
         if (uniformValues.contains(namedTex.glslNameId)) {
-            GLTexture *t = manager->glTextureManager()->lookupResource(namedTex.texId);
+            GLTexture *t = manager->glTextureManager()->lookupResource(namedTex.nodeId);
             if (t != nullptr) {
                 UniformValue &texUniform = uniformValues[namedTex.glslNameId];
                 Q_ASSERT(texUniform.valueType() == UniformValue::TextureValue);
@@ -1230,6 +1232,13 @@ void GraphicsContext::setParameters(ShaderParameterPack &parameterPack)
         // TO DO: Make sure that there's enough binding points
     }
 
+    for (int i = 0; i < parameterPack.atomicCounterBuffers().size(); ++i) {
+        const ShaderParameterPack::NamedBuffer &atomicCounter = parameterPack.atomicCounterBuffers().at(i);
+        Buffer *cpuBuffer = m_renderer->nodeManagers()->bufferManager()->lookupResource(atomicCounter.nodeId);
+        GLBuffer *atomicCounterBuffer = glBufferForRenderBuffer(cpuBuffer);
+        atomicCounterBuffer->bindBufferBase(this, atomicCounter.glslNameId, GLBuffer::AtomicCounterBuffer);
+    }
+
     // Update uniforms in the Default Uniform Block
     const PackUniformHash values = parameterPack.uniforms();
     const QVector<ShaderUniform> activeUniforms = parameterPack.submissionUniforms();
@@ -1238,6 +1247,7 @@ void GraphicsContext::setParameters(ShaderParameterPack &parameterPack)
         // We can use [] as we are sure the the uniform wouldn't
         // be un activeUniforms if there wasn't a matching value
         applyUniform(uniform, values[uniform.m_nameId]);
+
     }
 }
 
@@ -1320,16 +1330,16 @@ void GraphicsContext::applyUniform(const ShaderUniform &description, const Unifo
         break;
 
     case UniformType::UInt:
-        applyUniformHelper<UniformType::Int>(description.m_location, description.m_size, v);
+        applyUniformHelper<UniformType::UInt>(description.m_location, description.m_size, v);
         break;
     case UniformType::UIVec2:
-        applyUniformHelper<UniformType::IVec2>(description.m_location, description.m_size, v);
+        applyUniformHelper<UniformType::UIVec2>(description.m_location, description.m_size, v);
         break;
     case UniformType::UIVec3:
-        applyUniformHelper<UniformType::IVec3>(description.m_location, description.m_size, v);
+        applyUniformHelper<UniformType::UIVec3>(description.m_location, description.m_size, v);
         break;
     case UniformType::UIVec4:
-        applyUniformHelper<UniformType::IVec4>(description.m_location, description.m_size, v);
+        applyUniformHelper<UniformType::UIVec4>(description.m_location, description.m_size, v);
         break;
 
     case UniformType::Bool:
